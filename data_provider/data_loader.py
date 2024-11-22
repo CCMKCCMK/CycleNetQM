@@ -6,6 +6,10 @@ import torch
 from torch.utils.data import Dataset
 from sklearn.preprocessing import StandardScaler
 from utils.timefeatures import time_features
+import warnings
+from torch.multiprocessing import freeze_support
+
+warnings.filterwarnings('ignore')
 
 class Dataset_Electricity(Dataset):
     def __init__(self, root_path, flag='train', size=None,
@@ -103,3 +107,4 @@ class Dataset_Electricity(Dataset):
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
+    

@@ -22,7 +22,7 @@ do
       --features M \
       --seq_len $seq_len \
       --pred_len $pred_len \
-      --enc_in 321 \
+      --enc_in 320 \
       --cycle 168 \
       --model_type $model_type \
       --train_epochs 30 \

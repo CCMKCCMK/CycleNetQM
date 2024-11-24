@@ -50,6 +50,7 @@ class Exp_Main(Exp_Basic):
     def vali(self, vali_data, vali_loader, criterion):
         total_loss = []
         self.model.eval()
+        vail_bar = tqdm(vali_loader, desc=f'Vali Epoch', position=0)
         with torch.no_grad():
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark, batch_cycle) in enumerate(vali_loader):
                 batch_x = batch_x.float().to(self.device)
@@ -79,6 +80,8 @@ class Exp_Main(Exp_Basic):
 
                 loss = criterion(pred, true)
                 total_loss.append(loss)
+                vail_bar.set_postfix({'vali_loss': f'{loss.item():.7f}'})
+
                 
         total_loss = np.average(total_loss)
         self.model.train()
@@ -121,7 +124,7 @@ class Exp_Main(Exp_Basic):
             
             # Create progress bar for batches within each epoch
             batch_bar = tqdm(train_loader, desc=f'Epoch {epoch + 1}/{self.args.train_epochs}', 
-                        position=1, leave=False)
+                        position=1)
             
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark, batch_cycle) in enumerate(train_loader):
                 model_optim.zero_grad()
@@ -170,10 +173,12 @@ class Exp_Main(Exp_Basic):
                 if self.args.lradj == 'TST':
                     adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
                     scheduler.step()
-
-            train_loss = np.average(train_loss)
+            
+            # --------------------  HUGE Time delay???
+            train_loss = np.average(train_loss) 
             vali_loss = self.vali(vali_data, vali_loader, criterion)
             test_loss = self.vali(test_data, test_loader, criterion)
+            # ---------------------
             
             # Update epoch progress bar
             epoch_bar.set_postfix({

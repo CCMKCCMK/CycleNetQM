@@ -70,3 +70,12 @@ mse:0.1685352921485901, mae:0.26166749000549316
 Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_mlp_seed1024  
 mse:0.21219131350517273, mae:0.2993096709251404
 
+Electricity_96_96_CycleNet_custom_ftM_sl96_pl96_cycle168_linear_seed2024  
+mse:0.14150892198085785, mae:0.23447194695472717
+
+Electricity_96_96_CycleNet_custom_ftM_sl96_pl96_cycle168_linear_seed2024  
+mse:0.14150892198085785, mae:0.23447194695472717
+
+Electricity_96_96_CycleNet_custom_ftM_sl96_pl96_cycle168_linear_seed2024  
+mse:0.14150892198085785, mae:0.23447194695472717
+

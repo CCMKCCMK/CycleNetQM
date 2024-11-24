@@ -1,6 +1,6 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear, CycleNet, LSTM
+from models import Linear, CycleNet, LSTM, DoubleCycleNet
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -28,7 +28,8 @@ class Exp_Main(Exp_Basic):
         model_dict = {
             'Linear': Linear,
             'CycleNet': CycleNet,
-            'LSTM': LSTM
+            'LSTM': LSTM,
+            'DoubleCycleNet': DoubleCycleNet
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -66,6 +67,8 @@ class Exp_Main(Exp_Basic):
                             outputs = self.model(batch_x, batch_cycle)
                         elif self.args.model == 'LSTM':
                             outputs = self.model(batch_x)
+                        elif self.args.model == 'DoubleCycleNet':
+                            outputs = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
@@ -73,6 +76,8 @@ class Exp_Main(Exp_Basic):
                         outputs = self.model(batch_x, batch_cycle)
                     elif self.args.model == 'LSTM':
                         outputs = self.model(batch_x)
+                    elif self.args.model == 'DoubleCycleNet':
+                        outputs = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -146,6 +151,8 @@ class Exp_Main(Exp_Basic):
                             outputs = self.model(batch_x, batch_cycle)
                         elif self.args.model == 'LSTM':
                             outputs = self.model(batch_x)
+                        elif self.args.model == 'DoubleCycleNet':
+                            outputs = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
 
@@ -158,6 +165,8 @@ class Exp_Main(Exp_Basic):
                         outputs = self.model(batch_x, batch_cycle)
                     elif self.args.model == 'LSTM':
                         outputs = self.model(batch_x)
+                    elif self.args.model == 'DoubleCycleNet':
+                        outputs = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -240,6 +249,8 @@ class Exp_Main(Exp_Basic):
                             outputs = self.model(batch_x, batch_cycle)
                         elif self.args.model == 'LSTM':
                             outputs = self.model(batch_x)
+                        elif self.args.model == 'DoubleCycleNet':
+                            outputs = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
@@ -247,6 +258,8 @@ class Exp_Main(Exp_Basic):
                         outputs = self.model(batch_x, batch_cycle)
                     elif self.args.model == 'LSTM':
                         outputs = self.model(batch_x)
+                    elif self.args.model == 'DoubleCycleNet':
+                        outputs = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -314,6 +327,8 @@ class Exp_Main(Exp_Basic):
                             outputs = self.model(batch_x, batch_cycle)
                         elif self.args.model == 'LSTM':
                             outputs = self.model(batch_x)
+                        elif self.args.model == 'DoubleCycleNet':
+                            outputs = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
@@ -321,6 +336,8 @@ class Exp_Main(Exp_Basic):
                         outputs = self.model(batch_x, batch_cycle)
                     elif self.args.model == 'LSTM':
                         outputs = self.model(batch_x)
+                    elif self.args.model == 'DoubleCycleNet':
+                        outputs = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
                         

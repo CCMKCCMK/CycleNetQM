@@ -1,6 +1,6 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear, CycleNet
+from models import Linear, CycleNet, LSTM
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -27,7 +27,8 @@ class Exp_Main(Exp_Basic):
     def _build_model(self):
         model_dict = {
             'Linear': Linear,
-            'CycleNet': CycleNet
+            'CycleNet': CycleNet,
+            'LSTM': LSTM
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -63,6 +64,8 @@ class Exp_Main(Exp_Basic):
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
                             outputs = self.model(batch_x, batch_cycle)
+                        elif self.args.model == 'LSTM':
+                            outputs = self.model(batch_x, batch_y_mark)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
@@ -139,6 +142,8 @@ class Exp_Main(Exp_Basic):
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
                             outputs = self.model(batch_x, batch_cycle)
+                        elif self.args.model == 'LSTM':
+                            outputs = self.model(batch_x, batch_y_mark)
                         else:  # Linear
                             outputs = self.model(batch_x)
 
@@ -149,6 +154,8 @@ class Exp_Main(Exp_Basic):
                 else:
                     if self.args.model == 'CycleNet':
                         outputs = self.model(batch_x, batch_cycle)
+                    elif self.args.model == 'LSTM':
+                        outputs = self.model(batch_x, batch_y_mark)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -229,11 +236,15 @@ class Exp_Main(Exp_Basic):
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
                             outputs = self.model(batch_x, batch_cycle)
+                        elif self.args.model == 'LSTM':
+                            outputs = self.model(batch_x, batch_y_mark)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
                     if self.args.model == 'CycleNet':
                         outputs = self.model(batch_x, batch_cycle)
+                    elif self.args.model == 'LSTM':
+                        outputs = self.model(batch_x, batch_y_mark)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -299,11 +310,15 @@ class Exp_Main(Exp_Basic):
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
                             outputs = self.model(batch_x, batch_cycle)
+                        elif self.args.model == 'LSTM':
+                            outputs = self.model(batch_x, batch_y_mark)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
                     if self.args.model == 'CycleNet':
                         outputs = self.model(batch_x, batch_cycle)
+                    elif self.args.model == 'LSTM':
+                        outputs = self.model(batch_x, batch_y_mark)
                     else:  # Linear
                         outputs = self.model(batch_x)
                         

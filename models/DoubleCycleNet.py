@@ -15,7 +15,7 @@ class RecurrentCycle(torch.nn.Module):
         return self.data[gather_index]
 
 
-# 双层 CycleNet 模型
+# DoubleCycleNet 模型
 class Model(nn.Module):
     def __init__(self, configs):
         super(Model, self).__init__()
@@ -31,23 +31,11 @@ class Model(nn.Module):
 
         # 第一层周期建模
         self.cycleQueue1 = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
-        # 第二层周期建模
-        self.cycleQueue2 = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
-
-        # 第一层预测模型
-        assert self.model_type in ['linear', 'mlp']
-        if self.model_type == 'linear':
-            self.model1 = nn.Linear(self.seq_len, self.pred_len)
-        elif self.model_type == 'mlp':
-            self.model1 = nn.Sequential(
-                nn.Linear(self.seq_len, self.d_model),
-                nn.ReLU(),
-                nn.Linear(self.d_model, self.pred_len)
-            )
 
         # 第二层预测模型
+        assert self.model_type in ['linear', 'mlp']
         if self.model_type == 'linear':
-            self.model2 = nn.Linear(self.seq_len, self.pred_len)
+            self.model2 = nn.Linear(self.seq_len, self.pred_len)  # 第二层直接处理去周期化后的残差
         elif self.model_type == 'mlp':
             self.model2 = nn.Sequential(
                 nn.Linear(self.seq_len, self.d_model),
@@ -60,30 +48,26 @@ class Model(nn.Module):
 
         # 实例归一化 (RevIN)
         if self.use_revin:
-            seq_mean = torch.mean(x, dim=1, keepdim=True)
-            seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
-            x = (x - seq_mean) / torch.sqrt(seq_var)
+            seq_mean = torch.mean(x, dim=1, keepdim=True)  # 按时间步求均值
+            seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5  # 按时间步求方差
+            x = (x - seq_mean) / torch.sqrt(seq_var)  # 标准化输入
 
-        # 第一层：去除输入数据的周期性成分
-        x1 = x - self.cycleQueue1(cycle_index, self.seq_len)
-        # 第一层：预测残差
-        y1 = self.model1(x1.permute(0, 2, 1)).permute(0, 2, 1)
-        # 第一层：添加周期性成分
-        y1 = y1 + self.cycleQueue1((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+        # ========================= 第一层 =========================
+        # 提取数据的周期性成分
+        data_cycle = self.cycleQueue1(cycle_index, self.seq_len)  # 第一层提取周期性成分
+        # 去周期性，得到残差
+        res1 = x - data_cycle  # 第一层的输出是去掉周期性后的残差
 
-        # 第二层：对第一层的残差建模
-        x2 = x - y1  # 第一层残差作为第二层的输入
-        x2 = x2 - self.cycleQueue2(cycle_index, self.seq_len)
-        # 第二层：预测残差
-        y2 = self.model2(x2.permute(0, 2, 1)).permute(0, 2, 1)
-        # 第二层：添加周期性成分
-        y2 = y2 + self.cycleQueue2((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+        # ========================= 第二层 =========================
+        # 使用第二层预测模型对残差进行建模
+        res2 = self.model2(res1.permute(0, 2, 1)).permute(0, 2, 1)  # 第二层预测残差
 
-        # 最终输出
-        y = y1 + y2
+        # ========================= 最终输出 =========================
+        # 最终输出 = 周期性成分 + 第二层预测的残差
+        y = data_cycle + res2
 
         # 实例反归一化 (RevIN)
         if self.use_revin:
-            y = y * torch.sqrt(seq_var) + seq_mean
+            y = y * torch.sqrt(seq_var) + seq_mean  # 反归一化恢复原始数据分布
 
         return y

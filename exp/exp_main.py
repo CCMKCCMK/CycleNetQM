@@ -1,3 +1,4 @@
+import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
 from models import Linear,CycleNet
@@ -313,6 +314,16 @@ class Exp_Main(Exp_Basic):
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
         # inputx = inputx.reshape(-1, inputx.shape[-2], inputx.shape[-1])
+
+        # save the results
+        visual(trues[:, :, -1].reshape(-1)[:1000], preds[:, :, -1].reshape(-1)[:1000], os.path.join(folder_path, 'Overall.pdf'))
+        np.savetxt(os.path.join(folder_path, 'Overall.txt'), preds[0, :, -1])
+        np.savetxt(os.path.join(folder_path, 'Overall_true.txt'), trues[0, :, -1])
+
+        # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
+        Q = self.model.cycleQueue.data.detach().cpu().numpy()
+        print(Q.shape,preds.shape,len(batch_cycle))
+        visual(preds[:, :, -1].reshape(-1)[-Q.shape[0]:],Q[:,-1], os.path.join(folder_path, 'Remainall.pdf'))
 
         # result save
         folder_path = './results/' + setting + '/'

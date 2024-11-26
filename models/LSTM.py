@@ -98,11 +98,24 @@ class Model(nn.Module):
 
         # LSTM 学习残差分量
         lstm_out, _ = self.lstm(x)  # (batch_size, seq_len, hidden_size)
-        residual = self.fc(lstm_out[:, -self.pred_len:, :])  # (batch_size, pred_len, enc_in)
+        print(f"lstm_out shape: {lstm_out.shape}")  # 打印调试
+
+        # 确保 lstm_out 的时间维度足够长
+        if lstm_out.size(1) >= self.pred_len:
+            residual = self.fc(lstm_out[:, -self.pred_len:, :])  # (batch_size, pred_len, enc_in)
+        else:
+            residual = self.fc(lstm_out)  # 如果时间维度不足，则直接用现有输出
 
         # 加回周期性分量
         cycle_output = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
-        print(f"residual shape: {residual.shape}, cycle_output shape: {cycle_output.shape}")
+        print(f"residual shape: {residual.shape}, cycle_output shape: {cycle_output.shape}")  # 打印调试
+
+        # 对齐时间维度
+        if cycle_output.size(1) > residual.size(1):
+            cycle_output = cycle_output[:, :residual.size(1), :]  # 裁剪周期分量
+        elif cycle_output.size(1) < residual.size(1):
+            residual = torch.nn.functional.pad(residual, (0, 0, 0, cycle_output.size(1) - residual.size(1)))  # 扩展残差
+
         residual = residual + cycle_output
 
         # 数据后处理：复原归一化

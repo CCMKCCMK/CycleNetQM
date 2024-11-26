@@ -105,22 +105,18 @@ Q_repeated = np.tile(Q, [num_cycles,1])[:total_len]
 trues_remain = trues_last - Q_repeated
 
 # 保留小数
-remain = pd.DataFrame(trues_remain).round(6)
-remain.to_csv(folder_path + 'trans_remain.csv', index=False)
+pd.DataFrame(trues_remain).round(6).to_csv(folder_path + 'trans_remain.csv', index=False)
 
 # 保存Q
-Q = pd.DataFrame(Q).round(6)
-Q.to_csv(folder_path + 'trans_Q.csv', index=False)
+pd.DataFrame(Q).round(6).to_csv(folder_path + 'trans_Q.csv', index=False)
 
 Q = inverse_transform(Q)
 
 trues_remain = inverse_transform(trues_remain)
 
 # 保留小数
-remain = pd.DataFrame(trues_remain).round(6)
-remain.to_csv(folder_path + 'remain.csv', index=False)
+pd.DataFrame(trues_remain).round(6).to_csv(folder_path + 'remain.csv', index=False)
 
 # 保存Q
-Q = pd.DataFrame(Q).round(6)
-Q.to_csv(folder_path + 'Q.csv', index=False)
+pd.DataFrame(Q).round(6).to_csv(folder_path + 'Q.csv', index=False)
 print('done')

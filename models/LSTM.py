@@ -47,6 +47,94 @@
 #
 #         return predictions
 
+# import torch
+# import torch.nn as nn
+#
+# class RecurrentCycle(torch.nn.Module):
+#     def __init__(self, cycle_len, channel_size):
+#         super(RecurrentCycle, self).__init__()
+#         self.cycle_len = cycle_len
+#         self.channel_size = channel_size
+#         self.data = torch.nn.Parameter(torch.zeros(cycle_len, channel_size), requires_grad=True)
+#
+#     def forward(self, index, length):
+#         gather_index = (index.view(-1, 1) + torch.arange(length, device=index.device).view(1, -1)) % self.cycle_len
+#         return self.data[gather_index]
+#
+#
+# class Model(nn.Module):
+#     def __init__(self, configs):
+#         super(Model, self).__init__()
+#
+#         self.seq_len = configs.seq_len
+#         self.pred_len = configs.pred_len
+#         self.enc_in = configs.enc_in
+#         self.cycle_len = configs.cycle
+#         self.hidden_size = getattr(configs, 'hidden_size', 512)  # 默认值为 512
+#         self.num_layers = getattr(configs, 'num_layers', 2)  # 默认值为 2
+#         self.use_revin = configs.use_revin
+#
+#         # 可学习的周期性组件
+#         self.cycleQueue = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
+#
+#         # LSTM 模型
+#         self.lstm = nn.LSTM(
+#             input_size=self.enc_in,
+#             hidden_size=self.hidden_size,
+#             num_layers=self.num_layers,
+#             batch_first=True
+#         )
+#         # 全连接层，将 LSTM 的输出映射到预测长度
+#         self.fc = nn.Linear(self.hidden_size, self.enc_in)
+#
+#     def forward(self, x, cycle_index):
+#         # 数据预处理：去周期性分量
+#         if self.use_revin:
+#             seq_mean = torch.mean(x, dim=1, keepdim=True)
+#             seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
+#             x = (x - seq_mean) / torch.sqrt(seq_var)
+#
+#         # 如果输入序列长度不足 pred_len，则扩展输入序列
+#         if x.size(1) < self.pred_len:
+#             padding = torch.zeros(x.size(0), self.pred_len - x.size(1), x.size(2), device=x.device)
+#             x = torch.cat((x, padding), dim=1)
+#
+#         # 去除周期性分量
+#         x = x - self.cycleQueue(cycle_index, self.seq_len)
+#
+#         # LSTM 学习残差分量
+#         lstm_out, _ = self.lstm(x)  # (batch_size, seq_len, hidden_size)
+#         print(f"lstm_out shape: {lstm_out.shape}")  # 打印调试
+#
+#         # 如果 LSTM 输出的时间维度不足 pred_len，则补零扩展
+#         if lstm_out.size(1) < self.pred_len:
+#             padding = torch.zeros(lstm_out.size(0), self.pred_len - lstm_out.size(1), lstm_out.size(2),
+#                                   device=lstm_out.device)
+#             lstm_out = torch.cat((lstm_out, padding), dim=1)
+#
+#         # 取最后 pred_len 步的残差预测
+#         residual = self.fc(lstm_out[:, -self.pred_len:, :])
+#
+#         # 加回周期性分量
+#         cycle_output = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+#         print(f"residual shape: {residual.shape}, cycle_output shape: {cycle_output.shape}")
+#
+#         # 对齐时间维度
+#         if cycle_output.size(1) > residual.size(1):
+#             cycle_output = cycle_output[:, :residual.size(1), :]
+#         elif cycle_output.size(1) < residual.size(1):
+#             padding = torch.zeros(cycle_output.size(0), residual.size(1) - cycle_output.size(1), cycle_output.size(2),
+#                                   device=cycle_output.device)
+#             cycle_output = torch.cat((cycle_output, padding), dim=1)
+#
+#         residual = residual + cycle_output
+#
+#         # 数据后处理：复原归一化
+#         if self.use_revin:
+#             residual = residual * torch.sqrt(seq_var) + seq_mean
+#
+#         return residual
+
 import torch
 import torch.nn as nn
 
@@ -70,56 +158,52 @@ class Model(nn.Module):
         self.pred_len = configs.pred_len
         self.enc_in = configs.enc_in
         self.cycle_len = configs.cycle
-        self.hidden_size = getattr(configs, 'hidden_size', 512)  # 默认值为 512
-        self.num_layers = getattr(configs, 'num_layers', 2)  # 默认值为 2
         self.use_revin = configs.use_revin
 
-        # 可学习的周期性组件
+        # RecurrentCycle for cycle data
         self.cycleQueue = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
 
-        # LSTM 模型
+        # 默认值设置
+        self.hidden_size = 512  # 默认隐藏层大小
+        self.num_layers = 2  # 默认层数
+        self.bidirectional = False  # 默认不使用双向 LSTM
+
         self.lstm = nn.LSTM(
-            input_size=self.enc_in,
-            hidden_size=self.hidden_size,
-            num_layers=self.num_layers,
-            batch_first=True
+            input_size=self.enc_in,  # Feature size of each step
+            hidden_size=self.hidden_size,  # Size of hidden state
+            num_layers=self.num_layers,  # Number of layers
+            batch_first=True,  # Input shape is (batch_size, seq_len, input_size)
+            bidirectional=self.bidirectional  # Whether to use bidirectional LSTM
         )
-        # 全连接层，将 LSTM 的输出映射到预测长度
-        self.fc = nn.Linear(self.hidden_size, self.enc_in)
+
+        # Linear layer to map LSTM output to the desired shape
+        lstm_output_size = self.hidden_size * (2 if self.bidirectional else 1)
+        self.fc = nn.Linear(lstm_output_size, self.enc_in)  # Map hidden state to `enc_in`
 
     def forward(self, x, cycle_index):
-        # 数据预处理：去周期性分量
+        # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
+
+        # Instance normalization (Revin)
         if self.use_revin:
             seq_mean = torch.mean(x, dim=1, keepdim=True)
             seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
             x = (x - seq_mean) / torch.sqrt(seq_var)
 
-        x = x - self.cycleQueue(cycle_index, self.seq_len)  # 去除周期性分量
+        # Remove the cycle of the input data
+        x = x - self.cycleQueue(cycle_index, self.seq_len)
 
-        # LSTM 学习残差分量
-        lstm_out, _ = self.lstm(x)  # (batch_size, seq_len, hidden_size)
-        print(f"lstm_out shape: {lstm_out.shape}")  # 打印调试
+        # Pass through LSTM
+        # Output of LSTM: (batch_size, seq_len, hidden_size * num_directions)
+        lstm_out, _ = self.lstm(x)  # Obtain LSTM output
 
-        # 确保 lstm_out 的时间维度足够长
-        if lstm_out.size(1) >= self.pred_len:
-            residual = self.fc(lstm_out[:, -self.pred_len:, :])  # (batch_size, pred_len, enc_in)
-        else:
-            residual = self.fc(lstm_out)  # 如果时间维度不足，则直接用现有输出
+        # Pass LSTM output through a fully connected layer to project to `enc_in`
+        y = self.fc(lstm_out)  # (batch_size, seq_len, enc_in)
 
-        # 加回周期性分量
-        cycle_output = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
-        print(f"residual shape: {residual.shape}, cycle_output shape: {cycle_output.shape}")  # 打印调试
+        # Add back the cycle of the output data
+        y = y + self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.seq_len)
 
-        # 对齐时间维度
-        if cycle_output.size(1) > residual.size(1):
-            cycle_output = cycle_output[:, :residual.size(1), :]  # 裁剪周期分量
-        elif cycle_output.size(1) < residual.size(1):
-            residual = torch.nn.functional.pad(residual, (0, 0, 0, cycle_output.size(1) - residual.size(1)))  # 扩展残差
-
-        residual = residual + cycle_output
-
-        # 数据后处理：复原归一化
+        # Instance denormalization (Revin)
         if self.use_revin:
-            residual = residual * torch.sqrt(seq_var) + seq_mean
+            y = y * torch.sqrt(seq_var) + seq_mean
 
-        return residual
+        return y

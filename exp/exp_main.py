@@ -1,3 +1,5 @@
+from datetime import datetime
+import pandas as pd
 import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
@@ -19,6 +21,241 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 warnings.filterwarnings('ignore')
+def plot_comparison(training_data, weights, residual, save_dir='./results'):
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    # 创建三个子图
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
+    
+    # 1. Training Data (蓝色)
+    ax1.plot(training_data, color='blue', label='Normalized Training Data (Channel 320)')
+    ax1.set_ylim(-3, 3)
+    ax1.grid(True)
+    ax1.legend()
+    
+    # 2. Weights (橙色)
+    ax2.plot(weights, color='orange', label='Expanded Weights (Channel 320)')
+    ax2.set_ylim(-3, 3)
+    ax2.grid(True)
+    ax2.legend()
+    
+    # 3. Residual (红色)
+    ax3.plot(residual, color='red', label='Residual (Training Data - Weights)')
+    ax3.set_ylim(-3, 3)
+    ax3.grid(True)
+    ax3.legend()
+    
+    # 设置x轴标签
+    ax3.set_xlabel('Time Steps')
+    
+    # 设置y轴标签
+    ax1.set_ylabel('Normalized value')
+    ax2.set_ylabel('Normalized value')
+    ax3.set_ylabel('Residual value')
+    
+    plt.tight_layout()
+    
+    # 保存图片
+    plt.savefig(os.path.join(save_dir, f'comparison_{timestamp}.png'))
+    plt.close()
+    
+    print(f"Comparison plot saved as: comparison_{timestamp}.png")
+
+# 使用示例:
+# plot_comparison(trues_last[-len(Q_repeated):], Q_repeated, trues_remain)
+
+def detailed_analysis(trues_remain, preds_remain, Q, trues_last, preds_last, Q_repeated, save_dir='./results'):
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    # 创建多个子图
+    fig = plt.figure(figsize=(20, 15))
+    
+    # 1. Remain vs True Remain
+    plt.subplot(3, 3, 1)
+    plt.plot(preds_remain, label='Pred Remain', alpha=0.7)
+    plt.plot(trues_remain, label='True Remain', alpha=0.7)
+    plt.title('Pred vs True Remain')
+    plt.legend()
+    plt.grid(True)
+    
+    # 2. Q数据
+    plt.subplot(3, 3, 2)
+    plt.plot(Q[:, -1], label='Q', color='red', alpha=0.7)
+    plt.title('Q Values (One Cycle)')
+    plt.grid(True)
+    
+    # 3. True vs Pred (原始值)
+    plt.subplot(3, 3, 3)
+    plt.plot(preds_last[-len(Q_repeated):], label='Pred', alpha=0.7)
+    plt.plot(trues_last[-len(Q_repeated):], label='True', alpha=0.7)
+    plt.title('True vs Predicted Values')
+    plt.legend()
+    plt.grid(True)
+    
+    # 4. Remain和True Remain的直方图对比
+    plt.subplot(3, 3, 4)
+    plt.hist(preds_remain, bins=50, alpha=0.5, label='Pred Remain')
+    plt.hist(trues_remain, bins=50, alpha=0.5, label='True Remain')
+    plt.title('Remain Distribution Comparison')
+    plt.legend()
+    
+    # 5. Box Plot比较
+    plt.subplot(3, 3, 5)
+    plt.boxplot([preds_remain, trues_remain, Q[:, -1]], 
+                labels=['Pred Remain', 'True Remain', 'Q'])
+    plt.title('Box Plot Comparison')
+    
+    # 6. 预测误差分析
+    error = preds_remain - trues_remain
+    plt.subplot(3, 3, 6)
+    plt.plot(error, label='Prediction Error')
+    plt.title('Prediction Error (Pred Remain - True Remain)')
+    plt.grid(True)
+    
+    # 7. Rolling mean比较
+    window = min(len(Q_repeated) // 10, 100)
+    plt.subplot(3, 3, 7)
+    plt.plot(pd.Series(preds_remain).rolling(window=window).mean(), 
+            label='Pred Remain Rolling Mean')
+    plt.plot(pd.Series(trues_remain).rolling(window=window).mean(), 
+            label='True Remain Rolling Mean')
+    plt.title(f'Rolling Mean Comparison (window={window})')
+    plt.legend()
+    plt.grid(True)
+    
+    # 8. Scatter plot: Pred Remain vs True Remain
+    plt.subplot(3, 3, 8)
+    plt.scatter(trues_remain, preds_remain, alpha=0.1)
+    plt.plot([min(trues_remain), max(trues_remain)], 
+             [min(trues_remain), max(trues_remain)], 'r--')
+    plt.xlabel('True Remain')
+    plt.ylabel('Pred Remain')
+    plt.title('Pred vs True Remain Scatter')
+    
+    # 9. Error Distribution
+    plt.subplot(3, 3, 9)
+    plt.hist(error, bins=50)
+    plt.title('Error Distribution')
+    
+    plt.tight_layout()
+    
+    # 保存图片
+    plt.savefig(os.path.join(save_dir, f'detailed_analysis_{timestamp}.png'))
+    plt.close()
+
+    # 新建一个图形用于展示truth和pred的对比
+    fig2, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
+    
+    # Truth vs Truth Remain对比
+    ax1.plot(trues_last[-len(Q_repeated):], label='Truth', alpha=0.7)
+    ax1.plot(trues_remain, label='Truth Remain', alpha=0.7)
+    ax1.plot(Q_repeated, label='Q', alpha=0.5, linestyle='--')
+    ax1.set_title('Truth vs Truth Remain Comparison')
+    ax1.legend()
+    ax1.grid(True)
+    
+    # Pred vs Pred Remain对比
+    ax2.plot(preds_last[-len(Q_repeated):], label='Prediction', alpha=0.7)
+    ax2.plot(preds_remain, label='Pred Remain', alpha=0.7)
+    ax2.plot(Q_repeated, label='Q', alpha=0.5, linestyle='--')
+    ax2.set_title('Prediction vs Pred Remain Comparison')
+    ax2.legend()
+    ax2.grid(True)
+    
+    plt.tight_layout()
+    # 保存新的对比图
+    plt.savefig(os.path.join(save_dir, f'value_remain_comparison_{timestamp}.png'))
+    plt.close()
+
+    # 创建周期叠加图
+    fig3, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
+    
+    # 计算每个周期的数据点数
+    cycle_length = len(Q[:, -1])
+    num_cycles = len(Q_repeated) // cycle_length
+    
+    # Truth的周期叠加图
+    for i in range(num_cycles):
+        start_idx = i * cycle_length
+        end_idx = (i + 1) * cycle_length
+        ax1.plot(range(cycle_length), 
+                trues_last[-len(Q_repeated):][start_idx:end_idx], 
+                alpha=0.3, label=f'Cycle {i+1}' if i < 5 else None)
+    ax1.plot(range(cycle_length), Q[:, -1], 'r--', label='Q', linewidth=2)
+    ax1.set_title('Truth Values - Cycle Overlay')
+    if num_cycles > 5:
+        ax1.legend(['Cycles 1-5', 'Q'])
+    else:
+        ax1.legend()
+    ax1.grid(True)
+    
+    # Prediction的周期叠加图
+    for i in range(num_cycles):
+        start_idx = i * cycle_length
+        end_idx = (i + 1) * cycle_length
+        ax2.plot(range(cycle_length), 
+                preds_last[-len(Q_repeated):][start_idx:end_idx], 
+                alpha=0.3, label=f'Cycle {i+1}' if i < 5 else None)
+    ax2.plot(range(cycle_length), Q[:, -1], 'r--', label='Q', linewidth=2)
+    ax2.set_title('Predicted Values - Cycle Overlay')
+    if num_cycles > 5:
+        ax2.legend(['Cycles 1-5', 'Q'])
+    else:
+        ax2.legend()
+    ax2.grid(True)
+    
+    plt.tight_layout()
+    # 保存周期叠加图
+    plt.savefig(os.path.join(save_dir, f'cycle_overlay_{timestamp}.png'))
+    plt.close()
+
+    # 保存详细统计信息到文本文件
+    stats_file = os.path.join(save_dir, f'statistics_{timestamp}.txt')
+    with open(stats_file, 'w') as f:
+        f.write("Statistical Analysis\n")
+        f.write("==================\n\n")
+        
+        f.write("Pred Remain Statistics:\n")
+        f.write(f"Mean: {np.mean(preds_remain):.4f}\n")
+        f.write(f"Std: {np.std(preds_remain):.4f}\n")
+        f.write(f"Min: {np.min(preds_remain):.4f}\n")
+        f.write(f"Max: {np.max(preds_remain):.4f}\n")
+        f.write(f"Median: {np.median(preds_remain):.4f}\n\n")
+        
+        f.write("True Remain Statistics:\n")
+        f.write(f"Mean: {np.mean(trues_remain):.4f}\n")
+        f.write(f"Std: {np.std(trues_remain):.4f}\n")
+        f.write(f"Min: {np.min(trues_remain):.4f}\n")
+        f.write(f"Max: {np.max(trues_remain):.4f}\n")
+        f.write(f"Median: {np.median(trues_remain):.4f}\n\n")
+        
+        f.write("Q Statistics:\n")
+        f.write(f"Mean: {np.mean(Q[:, -1]):.4f}\n")
+        f.write(f"Std: {np.std(Q[:, -1]):.4f}\n")
+        f.write(f"Min: {np.min(Q[:, -1]):.4f}\n")
+        f.write(f"Max: {np.max(Q[:, -1]):.4f}\n")
+        f.write(f"Median: {np.median(Q[:, -1]):.4f}\n\n")
+        
+        f.write("Error Statistics:\n")
+        f.write(f"Mean Absolute Error: {np.mean(np.abs(error)):.4f}\n")
+        f.write(f"Root Mean Square Error: {np.sqrt(np.mean(error**2)):.4f}\n")
+        f.write(f"Error Std: {np.std(error):.4f}\n")
+        
+    # 保存数据到CSV
+    data_dict = {
+        'pred_remain': preds_remain,
+        'true_remain': trues_remain,
+        'Q': Q_repeated,
+        'prediction_error': error
+    }
+    df = pd.DataFrame(data_dict)
+    csv_path = os.path.join(save_dir, f'data_{timestamp}.csv')
+    df.to_csv(csv_path, index=False)
+    
+    print(f"Results saved to {save_dir}")
+    print(f"Image: detailed_analysis_{timestamp}.png")
+    print(f"Data: data_{timestamp}.csv")
+    print(f"Statistics: statistics_{timestamp}.txt")
 
 
 class Exp_Main(Exp_Basic):
@@ -240,7 +477,7 @@ class Exp_Main(Exp_Basic):
 
         preds = []
         trues = []
-        inputx = []
+        # inputx = []
         folder_path = './test_results/' + setting + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
@@ -304,6 +541,36 @@ class Exp_Main(Exp_Basic):
                     np.savetxt(os.path.join(folder_path, str(i) + '.txt'), pd)
                     np.savetxt(os.path.join(folder_path, str(i) + 'true.txt'), gt)
 
+                    # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
+                    print(batch_x.shape, batch_cycle.shape)
+                    Q = self.model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
+                    preds_last = pred[0, :, -1].reshape(-1)  # 展平预测结果
+                    trues_last = true[0, :, -1].reshape(-1)
+
+                    # 计算需要多少个完整周期
+                    Q_len = Q.shape[0]  # 一个周期的长度
+                    total_len = len(preds_last)
+                    num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
+
+                    Q = np.roll(Q, -self.args.seq_len-batch_cycle[0].detach().cpu().numpy(), axis=0)
+                    print(self.args.seq_len, batch_cycle[0].detach().cpu().numpy())
+
+                    # 将Q重复扩展到足够的长度
+                    Q_repeated = np.tile(Q[:, -1], num_cycles)[:total_len]
+
+                    # 计算remain
+                    pred_remain = preds_last[-len(Q_repeated):] - Q_repeated
+                    trues_remain = trues_last[-len(Q_repeated):] - Q_repeated
+
+                    detailed_analysis(trues_remain,pred_remain, Q, trues_last, preds_last, Q_repeated, folder_path)
+                    # 使用最后10个周期的数据                                     
+                    plot_comparison(
+                        training_data=trues_last[-len(Q_repeated):],  # 原始训练数据
+                        weights=Q_repeated,                           # 展开的周期性权重
+                        residual=trues_remain,                         # 残差数据
+                        save_dir=folder_path
+                    )
+
         if self.args.test_flop:
             test_params_flop(self.model, (batch_x.shape[1], batch_x.shape[2]))
             exit()
@@ -315,16 +582,33 @@ class Exp_Main(Exp_Basic):
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
         # inputx = inputx.reshape(-1, inputx.shape[-2], inputx.shape[-1])
 
-        # save the results
-        visual(trues[:, :, -1].reshape(-1)[:1000], preds[:, :, -1].reshape(-1)[:1000], os.path.join(folder_path, 'Overall.pdf'))
-        np.savetxt(os.path.join(folder_path, 'Overall.txt'), preds[0, :, -1])
-        np.savetxt(os.path.join(folder_path, 'Overall_true.txt'), trues[0, :, -1])
+        # # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
+        # Q = self.model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
+        # preds_last = preds[:, :, -1].reshape(-1)[:]  # 展平预测结果
+        # trues_last = trues[:, :, -1].reshape(-1)[:]
+        # # 计算需要多少个完整周期
+        # Q_len = Q.shape[0]  # 一个周期的长度
+        # total_len = len(preds_last)
+        # num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
 
-        # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-        Q = self.model.cycleQueue.data.detach().cpu().numpy()
-        print(Q.shape,preds.shape,len(batch_cycle))
-        visual(preds[:, :, -1].reshape(-1)[-Q.shape[0]:],Q[:,-1], os.path.join(folder_path, 'Remainall.pdf'))
+        # Q = np.roll(Q, -96, axis=0)
 
+        # # 将Q重复扩展到足够的长度
+        # Q_repeated = np.tile(Q[:, -1], num_cycles)[:total_len]
+
+        # # 计算remain
+        # pred_remain = preds_last[-len(Q_repeated):] - Q_repeated
+        # trues_remain = trues_last[-len(Q_repeated):] - Q_repeated
+
+        # detailed_analysis(trues_remain,pred_remain, Q, trues_last, preds_last, Q_repeated, folder_path)
+        # # 使用最后10个周期的数据                                     
+        # plot_comparison(
+        #     training_data=trues_last[-len(Q_repeated):],  # 原始训练数据
+        #     weights=Q_repeated,                           # 展开的周期性权重
+        #     residual=trues_remain,                         # 残差数据
+        #     save_dir=folder_path
+        # )
+        
         # result save
         folder_path = './results/' + setting + '/'
         if not os.path.exists(folder_path):

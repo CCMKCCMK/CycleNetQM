@@ -3,14 +3,14 @@ model_name=CycleNet
 root_path_name=./dataset/
 data_path_name=electricity.csv
 model_id_name=Electricity
-data_name=custom
+data_name=electricity
 
 
 model_type='linear'
 seq_len=96
-for pred_len in 96
+for pred_len in 720
 do
-for random_seed in 2024
+for random_seed in 1024
 do
     python -u run.py \
       --is_training 0 \

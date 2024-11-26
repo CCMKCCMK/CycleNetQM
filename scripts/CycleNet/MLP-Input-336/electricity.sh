@@ -13,7 +13,7 @@ do
 for random_seed in 1024
 do
     python -u run.py \
-      --is_training 1 \
+      --is_training 0 \
       --root_path $root_path_name \
       --data_path $data_path_name \
       --model_id $model_id_name'_'$seq_len'_'$pred_len \

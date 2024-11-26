@@ -46,7 +46,7 @@ train_data = df_data[border1s[0]:border2s[0]]
 _scaler.fit(train_data.values) # fit the scaler to the training data
 # print(_scaler.mean_)
 # exit()
-data = _scaler.transform(df_data.values)[:-1] # scale the data
+data = _scaler.transform(df_data.values) # scale the data
 print(data.shape)
 # else:
 #     data = df_data.values
@@ -55,9 +55,7 @@ df_stamp = df_raw[['date']] # only the date column
 df_stamp['date'] = pd.to_datetime(df_stamp.date) # convert the date column to datetime
 data_stamp = time_features(pd.to_datetime(df_stamp['date'].values)) # get the time features
 data_stamp = data_stamp.transpose(1, 0) # transpose the time features to match the shape of the data
-_data_x = data # all data
 _data_y = data # all data
-_data_stamp = data_stamp # time features of all test data
 
 def inverse_transform(data):
     return _scaler.inverse_transform(data) # inverse the scaling
@@ -75,7 +73,7 @@ class Configs:
 configs = Configs(
     seq_len=_seq_len,
     pred_len=_pred_len,
-    enc_in=320,
+    enc_in=321,
     cycle=_cycle,
     model_type='linear',
     d_model=512,
@@ -91,37 +89,9 @@ folder_path = './test_results/' + setting + '/'
 if not os.path.exists(folder_path):
     os.makedirs(folder_path)
 
-# _model.eval()
-# with torch.no_grad():
-#     batch_x = _data_x.float().to(_device)
-#     batch_y = _data_y.float().to(_device)
-
-#     batch_cycle = cycle_index.int().to(_device)
-
-#     outputs = _model(batch_x, batch_cycle)
-
-#     f_dim = 0
-#     # print(outputs.shape,batch_y.shape)
-#     outputs = outputs[:, -_args.pred_len:, f_dim:]
-#     batch_y = batch_y[:, -_args.pred_len:, f_dim:].to(_device)
-#     outputs = outputs.detach().cpu().numpy()
-#     batch_y = batch_y.detach().cpu().numpy()
-
-#     pred = outputs  # outputs.detach().cpu().numpy()  # .squeeze()
-#     true = batch_y  # batch_y.detach().cpu().numpy()  # .squeeze()
-
-#     input = batch_x.detach().cpu().numpy()
-#     gt = np.concatenate((input[0, :, -1], true[0, :, -1]), axis=0)
-#     pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
-
-#     # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-#     print(batch_x.shape, batch_cycle.shape)
-
 Q = _model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
 print(Q.shape)
-# preds_last = pred[0, :, -1].reshape(-1)  # 展平预测结果
 trues_last = _data_y[:,:]#[0, :, -1].reshape(-1)
-# print(trues_last[:,:-1].shape, trues_last[0])
 
 # 计算需要多少个完整周期
 Q_len = Q.shape[0]  # 一个周期的长度
@@ -134,15 +104,15 @@ Q_repeated = np.tile(Q, [num_cycles,1])[:total_len]
 # 计算remain
 trues_remain = trues_last - Q_repeated
 
-Q_repeated = inverse_transform(Q_repeated,)
+Q = inverse_transform(Q)
 
 trues_remain = inverse_transform(trues_remain)
 
-# 保存remain
-remain = pd.DataFrame(trues_remain)
+# 保留小数
+remain = pd.DataFrame(trues_remain).round(6)
 remain.to_csv(folder_path + 'remain.csv', index=False)
 
 # 保存Q
-Q = pd.DataFrame(Q)
+Q = pd.DataFrame(Q).round(6)
 Q.to_csv(folder_path + 'Q.csv', index=False)
 print('done')

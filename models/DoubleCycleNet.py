@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-# RecurrentCycle: 用于周期建模的核心模块
+# RecurrentCycle: 周期建模核心模块
 class RecurrentCycle(torch.nn.Module):
     def __init__(self, cycle_len, channel_size):
         super(RecurrentCycle, self).__init__()
@@ -32,10 +32,13 @@ class Model(nn.Module):
         # 第一层周期建模
         self.cycleQueue1 = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
 
+        # 第二层周期建模
+        self.cycleQueue2 = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
+
         # 第二层预测模型
         assert self.model_type in ['linear', 'mlp']
         if self.model_type == 'linear':
-            self.model2 = nn.Linear(self.seq_len, self.pred_len)  # 第二层直接处理去周期化后的残差
+            self.model2 = nn.Linear(self.seq_len, self.pred_len)  # 第二层直接处理第一层残差
         elif self.model_type == 'mlp':
             self.model2 = nn.Sequential(
                 nn.Linear(self.seq_len, self.d_model),
@@ -53,18 +56,23 @@ class Model(nn.Module):
             x = (x - seq_mean) / torch.sqrt(seq_var)  # 标准化输入
 
         # ========================= 第一层 =========================
-        # 提取数据的周期性成分
+        # 提取数据的主要周期性成分
         data_cycle = self.cycleQueue1(cycle_index, self.seq_len)  # 第一层提取周期性成分
-        # 去周期性，得到残差
-        res1 = x - data_cycle  # 第一层的输出是去掉周期性后的残差
+        # 去周期性，得到第一层残差
+        res1 = x - data_cycle  # 第一层的输出是去掉主要周期性后的残差
 
         # ========================= 第二层 =========================
-        # 使用第二层预测模型对残差进行建模
-        res2 = self.model2(res1.permute(0, 2, 1)).permute(0, 2, 1)  # 第二层预测残差
+        # 提取第一层残差中的次级周期性成分
+        res1_cycle = self.cycleQueue2(cycle_index, self.seq_len)  # 第二层提取次级周期性成分
+        # 去次级周期性，得到最终残差
+        res2 = res1 - res1_cycle  # 第二层的输出是去掉次级周期性后的残差
+
+        # 使用第二层预测模型对最终残差进行建模
+        final_residual = self.model2(res2.permute(0, 2, 1)).permute(0, 2, 1)
 
         # ========================= 最终输出 =========================
-        # 最终输出 = 周期性成分 + 第二层预测的残差
-        y = data_cycle + res2
+        # 最终输出 = 第一层周期性成分 + 第二层周期性成分 + 最终残差
+        y = data_cycle + res1_cycle + final_residual
 
         # 实例反归一化 (RevIN)
         if self.use_revin:

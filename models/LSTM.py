@@ -88,9 +88,7 @@ class Model(nn.Module):
         self.fc = nn.Linear(self.hidden_size, self.enc_in)
 
     def forward(self, x, cycle_index):
-        # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-
-        # 1. 数据预处理：去除周期性分量
+        # 数据预处理：去周期性分量
         if self.use_revin:
             seq_mean = torch.mean(x, dim=1, keepdim=True)
             seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
@@ -98,15 +96,16 @@ class Model(nn.Module):
 
         x = x - self.cycleQueue(cycle_index, self.seq_len)  # 去除周期性分量
 
-        # 2. 通过 LSTM 学习残差分量
-        # 输入 LSTM 的形状为 (batch_size, seq_len, enc_in)
-        lstm_out, _ = self.lstm(x)  # LSTM 输出形状为 (batch_size, seq_len, hidden_size)
-        residual = self.fc(lstm_out[:, -self.pred_len:, :])  # 取最后 pred_len 步的残差预测
+        # LSTM 学习残差分量
+        lstm_out, _ = self.lstm(x)  # (batch_size, seq_len, hidden_size)
+        residual = self.fc(lstm_out[:, -self.pred_len:, :])  # (batch_size, pred_len, enc_in)
 
-        # 3. 加回周期性分量
-        residual = residual + self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+        # 加回周期性分量
+        cycle_output = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+        print(f"residual shape: {residual.shape}, cycle_output shape: {cycle_output.shape}")
+        residual = residual + cycle_output
 
-        # 4. 数据后处理：复原归一化
+        # 数据后处理：复原归一化
         if self.use_revin:
             residual = residual * torch.sqrt(seq_var) + seq_mean
 

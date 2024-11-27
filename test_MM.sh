@@ -6,7 +6,7 @@ model_id_name=Electricity
 data_name=electricity
 
 model_type='CycleNetMM'
-seq_lens=(96 192 288)
+seq_lens=(96 336 720)
 
 for seq_len in "${seq_lens[@]}"
 do
@@ -27,7 +27,7 @@ do
         --enc_in 321 \
         --cycle 168 \
         --model_type $model_type \
-        --train_epochs 30 \
+        --train_epochs 15 \
         --patience 5 \
         --itr 1 --batch_size 64 --learning_rate 0.01 --random_seed $random_seed
     done

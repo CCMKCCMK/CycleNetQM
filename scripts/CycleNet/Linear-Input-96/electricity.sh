@@ -13,7 +13,7 @@ do
 for random_seed in 1024
 do
     python -u run.py \
-      --is_training 1 \
+      --is_training 0 \
       --root_path $root_path_name \
       --data_path $data_path_name \
       --model_id $model_id_name'_'$seq_len'_'$pred_len \
@@ -22,7 +22,7 @@ do
       --features M \
       --seq_len $seq_len \
       --pred_len $pred_len \
-      --enc_in 320 \
+      --enc_in 321 \
       --cycle 168 \
       --model_type $model_type \
       --train_epochs 30 \

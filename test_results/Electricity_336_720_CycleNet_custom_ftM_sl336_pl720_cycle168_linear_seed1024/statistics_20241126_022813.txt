@@ -1,0 +1,28 @@
+Statistical Analysis
+==================
+
+Pred Remain Statistics:
+Mean: -0.1563
+Std: 0.3989
+Min: -0.9851
+Max: 0.5876
+Median: -0.2560
+
+True Remain Statistics:
+Mean: -0.5514
+Std: 0.4480
+Min: -1.8374
+Max: 0.7537
+Median: -0.5225
+
+Q Statistics:
+Mean: -0.0072
+Std: 0.6860
+Min: -1.3736
+Max: 0.9208
+Median: 0.0726
+
+Error Statistics:
+Mean Absolute Error: 0.4681
+Root Mean Square Error: 0.5602
+Error Std: 0.3971

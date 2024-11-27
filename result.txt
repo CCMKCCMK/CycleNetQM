@@ -1,72 +1,450 @@
 Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
-mse:0.19783830642700195, mae:0.2765583097934723
+mse:0.14171521365642548, mae:0.23506096005439758
 
 Electricity_96_192_CycleNet_electricity_ftM_sl96_pl192_cycle168_linear_seed1024  
-mse:0.19912990927696228, mae:0.27945831418037415
+mse:0.1554773449897766, mae:0.24703720211982727
 
 Electricity_96_336_CycleNet_electricity_ftM_sl96_pl336_cycle168_linear_seed1024  
-mse:0.21489985287189484, mae:0.2950003743171692
+mse:0.17245322465896606, mae:0.2644929587841034
 
 Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
-mse:0.25924524664878845, mae:0.32903939485549927
+mse:0.2106768935918808, mae:0.29684382677078247
 
 Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
-mse:0.14380492269992828, mae:0.23769521713256836
-
-Electricity_336_192_CycleNet_custom_ftM_sl336_pl192_cycle168_linear_seed1024  
-mse:0.15871036052703857, mae:0.2502976059913635
-
-Electricity_336_336_CycleNet_custom_ftM_sl336_pl336_cycle168_linear_seed1024  
-mse:0.17712916433811188, mae:0.2676433026790619
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_336_720_CycleNet_custom_ftM_sl336_pl720_cycle168_linear_seed1024  
-mse:0.2199857532978058, mae:0.3015812635421753
+mse:0.19858595728874207, mae:0.2874288856983185
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_linear_seed1024  
-mse:0.1368008255958557, mae:0.23083274066448212
+mse:0.12824811041355133, mae:0.22301003336906433
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_720_192_CycleNet_custom_ftM_sl720_pl192_cycle168_linear_seed1024  
-mse:0.15225180983543396, mae:0.24427753686904907
+mse:0.14386780560016632, mae:0.23838625848293304
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_720_336_CycleNet_custom_ftM_sl720_pl336_cycle168_linear_seed1024  
-mse:0.17072847485542297, mae:0.2623792886734009
+mse:0.15972459316253662, mae:0.25453096628189087
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_linear_seed1024  
-mse:0.21443991363048553, mae:0.2977735996246338
+mse:0.1970515251159668, mae:0.287343829870224
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_96_96_CycleNet_custom_ftM_sl96_pl96_cycle168_mlp_seed1024  
-mse:0.1640823930501938, mae:0.2547368109226227
+mse:0.13616293668746948, mae:0.22959952056407928
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_96_192_CycleNet_custom_ftM_sl96_pl192_cycle168_mlp_seed1024  
-mse:0.17701075971126556, mae:0.26521435379981995
+mse:0.1526988297700882, mae:0.2445981502532959
 
 Electricity_96_336_CycleNet_custom_ftM_sl96_pl336_cycle168_mlp_seed1024  
-mse:0.19457897543907166, mae:0.28231024742126465
+mse:0.17018471658229828, mae:0.2635161876678467
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_96_720_CycleNet_custom_ftM_sl96_pl720_cycle168_mlp_seed1024  
-mse:0.24080130457878113, mae:0.3204079270362854
+mse:0.21262098848819733, mae:0.29971835017204285
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_mlp_seed1024  
-mse:0.13533750176429749, mae:0.22895795106887817
+mse:0.126430943608284, mae:0.22142358124256134
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_336_192_CycleNet_custom_ftM_sl336_pl192_cycle168_mlp_seed1024  
-mse:0.1529335081577301, mae:0.24467892944812775
+mse:0.1439596265554428, mae:0.23764503002166748
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_336_336_CycleNet_custom_ftM_sl336_pl336_cycle168_mlp_seed1024  
-mse:0.17110712826251984, mae:0.2623670995235443
+mse:0.1605938971042633, mae:0.25539445877075195
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_336_720_CycleNet_custom_ftM_sl336_pl720_cycle168_mlp_seed1024  
-mse:0.2155253142118454, mae:0.3005236089229584
+mse:0.19863241910934448, mae:0.2906443476676941
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_mlp_seed1024  
-mse:0.1344926357269287, mae:0.2292744368314743
+mse:0.12798084318637848, mae:0.22348053753376007
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
 
 Electricity_720_192_CycleNet_custom_ftM_sl720_pl192_cycle168_mlp_seed1024  
-mse:0.15165400505065918, mae:0.2448522001504898
+mse:0.14473681151866913, mae:0.2391379028558731
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.24088484048843384, mae:0.3581558167934418
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.24088484048843384, mae:0.3581558167934418
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.24088484048843384, mae:0.3581558167934418
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.24088484048843384, mae:0.3581558167934418
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12798084318637848, mae:0.22348053753376007
+
+Electricity_720_192_CycleNet_custom_ftM_sl720_pl192_cycle168_mlp_seed1024  
+mse:0.14473681151866913, mae:0.2391379028558731
 
 Electricity_720_336_CycleNet_custom_ftM_sl720_pl336_cycle168_mlp_seed1024  
-mse:0.1685352921485901, mae:0.26166749000549316
+mse:0.1590031385421753, mae:0.25529035925865173
 
 Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_mlp_seed1024  
-mse:0.21219131350517273, mae:0.2993096709251404
+mse:0.19598388671875, mae:0.29008015990257263
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.19598388671875, mae:0.29008015990257263
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.19598388671875, mae:0.29008015990257263
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12798084318637848, mae:0.22348053753376007
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_mlp_seed2024  
+mse:0.12788936495780945, mae:0.22340142726898193
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.19598388671875, mae:0.29008015990257263
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_linear_seed1024  
+mse:0.1970515251159668, mae:0.287343829870224
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_192_CycleNet_electricity_ftM_sl96_pl192_cycle168_linear_seed1024  
+mse:0.1554773449897766, mae:0.24703720211982727
+
+Electricity_96_336_CycleNet_electricity_ftM_sl96_pl336_cycle168_linear_seed1024  
+mse:0.17245322465896606, mae:0.2644929587841034
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_192_CycleNet_custom_ftM_sl336_pl192_cycle168_linear_seed1024  
+mse:0.14424051344394684, mae:0.23770751059055328
+
+Electricity_336_336_CycleNet_custom_ftM_sl336_pl336_cycle168_linear_seed1024  
+mse:0.16098931431770325, mae:0.2550623118877411
+
+Electricity_336_720_CycleNet_custom_ftM_sl336_pl720_cycle168_linear_seed1024  
+mse:0.19858595728874207, mae:0.2874288856983185
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_linear_seed1024  
+mse:0.12824811041355133, mae:0.22301003336906433
+
+Electricity_720_192_CycleNet_custom_ftM_sl720_pl192_cycle168_linear_seed1024  
+mse:0.14386780560016632, mae:0.23838625848293304
+
+Electricity_720_336_CycleNet_custom_ftM_sl720_pl336_cycle168_linear_seed1024  
+mse:0.15972459316253662, mae:0.25453096628189087
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_linear_seed1024  
+mse:0.1970515251159668, mae:0.287343829870224
+
+Electricity_96_96_CycleNet_custom_ftM_sl96_pl96_cycle168_mlp_seed1024  
+mse:0.13616293668746948, mae:0.22959952056407928
+
+Electricity_96_192_CycleNet_custom_ftM_sl96_pl192_cycle168_mlp_seed1024  
+mse:0.1526988297700882, mae:0.2445981502532959
+
+Electricity_96_336_CycleNet_custom_ftM_sl96_pl336_cycle168_mlp_seed1024  
+mse:0.17018471658229828, mae:0.2635161876678467
+
+Electricity_96_720_CycleNet_custom_ftM_sl96_pl720_cycle168_mlp_seed1024  
+mse:0.21262098848819733, mae:0.29971835017204285
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_mlp_seed1024  
+mse:0.126430943608284, mae:0.22142358124256134
+
+Electricity_336_192_CycleNet_custom_ftM_sl336_pl192_cycle168_mlp_seed1024  
+mse:0.1439596265554428, mae:0.23764503002166748
+
+Electricity_336_336_CycleNet_custom_ftM_sl336_pl336_cycle168_mlp_seed1024  
+mse:0.1605938971042633, mae:0.25539445877075195
+
+Electricity_336_720_CycleNet_custom_ftM_sl336_pl720_cycle168_mlp_seed1024  
+mse:0.19863241910934448, mae:0.2906443476676941
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_mlp_seed2024  
+mse:0.12788936495780945, mae:0.22340142726898193
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.14171521365642548, mae:0.23506096005439758
+
+Electricity_96_192_CycleNet_electricity_ftM_sl96_pl192_cycle168_linear_seed1024  
+mse:0.1554773449897766, mae:0.24703720211982727
+
+Electricity_96_336_CycleNet_electricity_ftM_sl96_pl336_cycle168_linear_seed1024  
+mse:0.17245322465896606, mae:0.2644929587841034
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.2106768935918808, mae:0.29684382677078247
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1288175880908966, mae:0.22327084839344025
+
+Electricity_336_192_CycleNet_custom_ftM_sl336_pl192_cycle168_linear_seed1024  
+mse:0.14424051344394684, mae:0.23770751059055328
+
+Electricity_336_336_CycleNet_custom_ftM_sl336_pl336_cycle168_linear_seed1024  
+mse:0.16098931431770325, mae:0.2550623118877411
+
+Electricity_336_720_CycleNet_custom_ftM_sl336_pl720_cycle168_linear_seed1024  
+mse:0.19858595728874207, mae:0.2874288856983185
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_linear_seed1024  
+mse:0.12824811041355133, mae:0.22301003336906433
+
+Electricity_720_192_CycleNet_custom_ftM_sl720_pl192_cycle168_linear_seed1024  
+mse:0.14386780560016632, mae:0.23838625848293304
+
+Electricity_720_336_CycleNet_custom_ftM_sl720_pl336_cycle168_linear_seed1024  
+mse:0.15972459316253662, mae:0.25453096628189087
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_linear_seed1024  
+mse:0.1970515251159668, mae:0.287343829870224
+
+Electricity_96_96_CycleNet_custom_ftM_sl96_pl96_cycle168_mlp_seed1024  
+mse:0.13616293668746948, mae:0.22959952056407928
+
+Electricity_96_192_CycleNet_custom_ftM_sl96_pl192_cycle168_mlp_seed1024  
+mse:0.1526988297700882, mae:0.2445981502532959
+
+Electricity_96_336_CycleNet_custom_ftM_sl96_pl336_cycle168_mlp_seed1024  
+mse:0.17018471658229828, mae:0.2635161876678467
+
+Electricity_96_720_CycleNet_custom_ftM_sl96_pl720_cycle168_mlp_seed1024  
+mse:0.21262098848819733, mae:0.29971835017204285
+
+Electricity_336_96_CycleNet_custom_ftM_sl336_pl96_cycle168_mlp_seed1024  
+mse:0.126430943608284, mae:0.22142358124256134
+
+Electricity_336_192_CycleNet_custom_ftM_sl336_pl192_cycle168_mlp_seed1024  
+mse:0.1439596265554428, mae:0.23764503002166748
+
+Electricity_336_336_CycleNet_custom_ftM_sl336_pl336_cycle168_mlp_seed1024  
+mse:0.1605938971042633, mae:0.25539445877075195
+
+Electricity_336_720_CycleNet_custom_ftM_sl336_pl720_cycle168_mlp_seed1024  
+mse:0.19863241910934448, mae:0.2906443476676941
+
+Electricity_720_96_CycleNet_custom_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12798084318637848, mae:0.22348053753376007
+
+Electricity_720_192_CycleNet_custom_ftM_sl720_pl192_cycle168_mlp_seed1024  
+mse:0.14473681151866913, mae:0.2391379028558731
+
+Electricity_720_336_CycleNet_custom_ftM_sl720_pl336_cycle168_mlp_seed1024  
+mse:0.1590031385421753, mae:0.25529035925865173
+
+Electricity_720_720_CycleNet_custom_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.19598388671875, mae:0.29008015990257263
 

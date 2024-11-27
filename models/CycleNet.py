@@ -1,5 +1,7 @@
+import time
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
 
 class RecurrentCycle(torch.nn.Module):
     # Thanks for the contribution of wayhoww.
@@ -50,18 +52,25 @@ class Model(nn.Module):
             seq_mean = torch.mean(x, dim=1, keepdim=True)
             seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
             x = (x - seq_mean) / torch.sqrt(seq_var)
+        # plt.plot(x[-1,:,-1].detach().cpu().numpy())
 
         # remove the cycle of the input data
         x = x - self.cycleQueue(cycle_index, self.seq_len)
+        # plt.plot(x[-1,:,-1].detach().cpu().numpy())
+        # plt.plot(self.cycleQueue(cycle_index, self.seq_len)[-1,:,-1].detach().cpu().numpy())
 
         # forecasting with channel independence (parameters-sharing)
         y = self.model(x.permute(0, 2, 1)).permute(0, 2, 1)
+        # plt.plot(y[-1,:,-1].detach().cpu().numpy())
 
         # add back the cycle of the output data
         y = y + self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+
+        # plt.savefig('./checkimg/'+str(time.time())+'test.png', bbox_inches='tight')
+        # plt.close()
 
         # instance denorm
         if self.use_revin:
             y = y * torch.sqrt(seq_var) + seq_mean
 
-        return y, x
+        return y

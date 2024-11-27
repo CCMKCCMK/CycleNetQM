@@ -51,6 +51,7 @@ class Model(nn.Module):
             seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
             x = (x - seq_mean) / torch.sqrt(seq_var)
 
+
         # remove the cycle of the input data
         x = x - self.cycleQueue(cycle_index, self.seq_len)
 

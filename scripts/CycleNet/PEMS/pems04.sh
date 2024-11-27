@@ -1,4 +1,4 @@
-model_name=CycleNet
+model_name=Linear
 
 root_path_name=./dataset/
 data_path_name=PEMS04.npz

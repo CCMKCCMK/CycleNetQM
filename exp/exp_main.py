@@ -62,12 +62,12 @@ class Exp_Main(Exp_Basic):
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
-                            outputs = self.model(batch_x, batch_cycle)
+                            outputs, residuals = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
                     if self.args.model == 'CycleNet':
-                        outputs = self.model(batch_x, batch_cycle)
+                        outputs, residuals = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -138,7 +138,7 @@ class Exp_Main(Exp_Basic):
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
-                            outputs = self.model(batch_x, batch_cycle)
+                            outputs, residuals = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
 
@@ -148,7 +148,7 @@ class Exp_Main(Exp_Basic):
                         loss = criterion(outputs, batch_y)
                 else:
                     if self.args.model == 'CycleNet':
-                        outputs = self.model(batch_x, batch_cycle)
+                        outputs, residuals = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -212,6 +212,8 @@ class Exp_Main(Exp_Basic):
 
         preds = []
         trues = []
+        residuals_list = []
+        input_list = []
         folder_path = './test_results/' + setting + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
@@ -228,12 +230,12 @@ class Exp_Main(Exp_Basic):
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
-                            outputs = self.model(batch_x, batch_cycle)
+                            outputs, residuals = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
                     if self.args.model == 'CycleNet':
-                        outputs = self.model(batch_x, batch_cycle)
+                        outputs, residuals = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
 
@@ -242,9 +244,14 @@ class Exp_Main(Exp_Basic):
                 batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
                 outputs = outputs.detach().cpu().numpy()
                 batch_y = batch_y.detach().cpu().numpy()
+                residuals = residuals.detach().cpu().numpy()
+                inputs = batch_x.detach().cpu().numpy()
 
                 pred = outputs
                 true = batch_y
+                
+                residuals_list.append(residuals)
+                input_list.append(inputs)
 
                 preds.append(pred)
                 trues.append(true)
@@ -256,9 +263,17 @@ class Exp_Main(Exp_Basic):
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
                     np.savetxt(os.path.join(folder_path, str(i) + '.txt'), pd)
                     np.savetxt(os.path.join(folder_path, str(i) + 'true.txt'), gt)
+                    # 可视化输入数据和残差对比
+                    self.visualize_input_residual(
+                        inputs=inputs[0, :, -1],  # 取第一个样本的最后一个特征
+                        residuals=residuals[0, :, -1],
+                        save_path=os.path.join(folder_path, f'input_residual_{i}.pdf')
+                    )
 
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
+        residuals_all = np.concatenate(residuals_list, axis=0)
+        inputs_all = np.concatenate(input_list, axis=0)
 
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
@@ -273,6 +288,13 @@ class Exp_Main(Exp_Basic):
         with open("result.txt", 'a') as f:
             f.write(f"{setting}  \n")
             f.write(f'mse:{mse}, mae:{mae}\n\n')
+            
+        # 保存最终的可视化结果
+        self.visualize_input_residual(
+            inputs=inputs_all[0, :, -1],
+            residuals=residuals_all[0, :, -1],
+            save_path=os.path.join(folder_path, 'final_input_residual.pdf')
+        )
 
         return
 
@@ -298,12 +320,12 @@ class Exp_Main(Exp_Basic):
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast('cuda'):
                         if self.args.model == 'CycleNet':
-                            outputs = self.model(batch_x, batch_cycle)
+                            outputs, residuals = self.model(batch_x, batch_cycle)
                         else:  # Linear
                             outputs = self.model(batch_x)
                 else:
                     if self.args.model == 'CycleNet':
-                        outputs = self.model(batch_x, batch_cycle)
+                        outputs, residuals = self.model(batch_x, batch_cycle)
                     else:  # Linear
                         outputs = self.model(batch_x)
                         
@@ -320,3 +342,31 @@ class Exp_Main(Exp_Basic):
         np.save(folder_path + 'real_prediction.npy', preds)
 
         return
+    
+    def visualize_input_residual(self, inputs, residuals, save_path):
+        """
+        可视化输入数据和去除周期模式后的残差对比
+        """
+        plt.figure(figsize=(15, 6))
+        
+        # 绘制原始输入数据和残差
+        plt.plot(inputs, label='Original Input', color='blue', linewidth=2)
+        plt.plot(residuals, label='After Removing Periodic Pattern', color='red', linewidth=2)
+        
+        plt.title('Comparison: Original Data vs After Removing Periodic Pattern')
+        plt.xlabel('Time Steps')
+        plt.ylabel('Value')
+        plt.grid(True)
+        plt.legend()
+        
+        # 调整y轴范围
+        y_min = min(np.min(inputs), np.min(residuals))
+        y_max = max(np.max(inputs), np.max(residuals))
+        margin = (y_max - y_min) * 0.1
+        plt.ylim(y_min - margin, y_max + margin)
+        
+        plt.tight_layout()
+        
+        # 保存图像
+        plt.savefig(save_path)
+        plt.close()

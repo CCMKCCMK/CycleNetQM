@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description='CycleNet for Time Series Forecasti
 parser.add_argument('--random_seed', type=int, default=1024, help='random seed')
 
 # basic config
-parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
+parser.add_argument('--is_training', type=int, required=True, default=0, help='status')
 parser.add_argument('--model_id', type=str, required=True, default='test', help='model id')
 parser.add_argument('--model', type=str, required=True, default='CycleNet', help='model name')
 

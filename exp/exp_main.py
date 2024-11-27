@@ -3,7 +3,7 @@ import pandas as pd
 import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear,CycleNet
+from models import Linear,CycleNet,CycleNetMM
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -61,8 +61,6 @@ def plot_comparison(training_data, weights, residual, save_dir='./results'):
     
     print(f"Comparison plot saved as: comparison_{timestamp}.png")
 
-# 使用示例:
-# plot_comparison(trues_last[-len(Q_repeated):], Q_repeated, trues_remain)
 
 def detailed_analysis(trues_remain, preds_remain, Q, trues_last, preds_last, Q_repeated, save_dir='./results'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -266,6 +264,7 @@ class Exp_Main(Exp_Basic):
         model_dict = {
             'Linear': Linear,
             'CycleNet': CycleNet,
+            'CycleNetMM': CycleNetMM
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -303,7 +302,9 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
+                        if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                            outputs = self.model(batch_x, batch_cycle)
+                        elif any(substr in self.args.model for substr in {'CycleNet'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
                                  {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
@@ -314,7 +315,9 @@ class Exp_Main(Exp_Basic):
                             else:
                                 outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
+                    if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                        outputs = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'CycleNet'}):
                         outputs = self.model(batch_x, batch_cycle)
                     elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
                         outputs = self.model(batch_x)
@@ -338,6 +341,8 @@ class Exp_Main(Exp_Basic):
         return total_loss
 
     def train(self, setting):
+        if self.args.model == 'CycleNetMM':
+            return self.train_CycleNetMM_Q(setting)
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')
         test_data, test_loader = self._get_data(flag='test')
@@ -387,7 +392,9 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
+                        if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                            outputs = self.model(batch_x, batch_cycle, 2)
+                        elif any(substr in self.args.model for substr in {'CycleNet'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
                                  {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
@@ -404,7 +411,9 @@ class Exp_Main(Exp_Basic):
                         loss = criterion(outputs, batch_y)
                         train_loss.append(loss.item())
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
+                    if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                        outputs = self.model(batch_x, batch_cycle, 2)
+                    elif any(substr in self.args.model for substr in {'CycleNet'}):
                         outputs = self.model(batch_x, batch_cycle)
                     elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
                         outputs = self.model(batch_x)
@@ -541,35 +550,38 @@ class Exp_Main(Exp_Basic):
                     np.savetxt(os.path.join(folder_path, str(i) + '.txt'), pd)
                     np.savetxt(os.path.join(folder_path, str(i) + 'true.txt'), gt)
 
-                    # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-                    print(batch_x.shape, batch_cycle.shape)
-                    Q = self.model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
-                    preds_last = pred[0, :, -1].reshape(-1)  # 展平预测结果
-                    trues_last = true[0, :, -1].reshape(-1)
+                    try:
+                        # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
+                        print(batch_x.shape, batch_cycle.shape)
+                        Q = self.model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
+                        preds_last = pred[0, :, -1].reshape(-1)  # 展平预测结果
+                        trues_last = true[0, :, -1].reshape(-1)
 
-                    # 计算需要多少个完整周期
-                    Q_len = Q.shape[0]  # 一个周期的长度
-                    total_len = len(preds_last)
-                    num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
+                        # 计算需要多少个完整周期
+                        Q_len = Q.shape[0]  # 一个周期的长度
+                        total_len = len(preds_last)
+                        num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
 
-                    Q = np.roll(Q, -self.args.seq_len-batch_cycle[0].detach().cpu().numpy(), axis=0)
-                    print(self.args.seq_len, batch_cycle[0].detach().cpu().numpy())
+                        Q = np.roll(Q, -self.args.seq_len-batch_cycle[0].detach().cpu().numpy(), axis=0)
+                        print(self.args.seq_len, batch_cycle[0].detach().cpu().numpy())
 
-                    # 将Q重复扩展到足够的长度
-                    Q_repeated = np.tile(Q[:, -1], num_cycles)[:total_len]
+                        # 将Q重复扩展到足够的长度
+                        Q_repeated = np.tile(Q[:, -1], num_cycles)[:total_len]
 
-                    # 计算remain
-                    pred_remain = preds_last[-len(Q_repeated):] - Q_repeated
-                    trues_remain = trues_last[-len(Q_repeated):] - Q_repeated
+                        # 计算remain
+                        pred_remain = preds_last[-len(Q_repeated):] - Q_repeated
+                        trues_remain = trues_last[-len(Q_repeated):] - Q_repeated
 
-                    detailed_analysis(trues_remain,pred_remain, Q, trues_last, preds_last, Q_repeated, folder_path)
-                    # 使用最后10个周期的数据                                     
-                    plot_comparison(
-                        training_data=trues_last[-len(Q_repeated):],  # 原始训练数据
-                        weights=Q_repeated,                           # 展开的周期性权重
-                        residual=trues_remain,                         # 残差数据
-                        save_dir=folder_path
-                    )
+                        detailed_analysis(trues_remain,pred_remain, Q, trues_last, preds_last, Q_repeated, folder_path)
+                        # 使用最后10个周期的数据                                     
+                        plot_comparison(
+                            training_data=trues_last[-len(Q_repeated):],  # 原始训练数据
+                            weights=Q_repeated,                           # 展开的周期性权重
+                            residual=trues_remain,                         # 残差数据
+                            save_dir=folder_path
+                        )
+                    except:
+                        print('error')
 
         if self.args.test_flop:
             test_params_flop(self.model, (batch_x.shape[1], batch_x.shape[2]))
@@ -689,3 +701,184 @@ class Exp_Main(Exp_Basic):
         np.save(folder_path + 'real_prediction.npy', preds)
 
         return
+    
+    def train_CycleNetMM_Q(self, setting):
+        train_data, train_loader = self._get_data(flag='train')
+        vali_data, vali_loader = self._get_data(flag='val')
+        test_data, test_loader = self._get_data(flag='test')
+
+        path = os.path.join(self.args.checkpoints, setting)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        time_now = time.time()
+
+        train_steps = len(train_loader)
+        early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
+
+        model_optim = self._select_optimizer()
+        criterion = self._select_criterion()
+
+        if self.args.use_amp:
+            scaler = torch.cuda.amp.GradScaler()
+
+        scheduler = lr_scheduler.OneCycleLR(optimizer=model_optim,
+                                            steps_per_epoch=train_steps,
+                                            pct_start=self.args.pct_start,
+                                            epochs=self.args.train_epochs,
+                                            max_lr=self.args.learning_rate)
+
+        for epoch in range(self.args.train_epochs):
+            iter_count = 0
+            train_loss = []
+
+            self.model.train()
+            epoch_time = time.time()
+            # max_memory = 0
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark, batch_cycle) in enumerate(train_loader):
+                iter_count += 1
+                model_optim.zero_grad()
+                batch_x = batch_x.float().to(self.device)
+
+                batch_y = batch_y.float().to(self.device)
+                batch_x_mark = batch_x_mark.float().to(self.device)
+                batch_y_mark = batch_y_mark.float().to(self.device)
+                batch_cycle = batch_cycle.int().to(self.device)
+
+                # decoder input
+                dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
+                dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+
+                # encoder - decoder
+                if self.args.use_amp:
+                    with torch.cuda.amp.autocast():
+                        outputs = self.model(batch_x, batch_cycle, 1)
+                        f_dim = -1 if self.args.features == 'MS' else 0
+                        outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                        batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                        loss = criterion(outputs, batch_y)
+                        train_loss.append(loss.item())
+                else:
+                    outputs = self.model(batch_x, batch_cycle, 1)
+                    f_dim = -1 if self.args.features == 'MS' else 0
+                    outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                    loss = criterion(outputs, batch_y)
+                    train_loss.append(loss.item())
+
+                if (i + 1) % 100 == 0:
+                    print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
+                    speed = (time.time() - time_now) / iter_count
+                    left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)
+                    print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
+                    iter_count = 0
+                    time_now = time.time()
+
+                if self.args.use_amp:
+                    scaler.scale(loss).backward()
+                    scaler.step(model_optim)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    model_optim.step()
+
+                if self.args.lradj == 'TST':
+                    adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
+                    scheduler.step()
+
+            print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
+            train_loss = np.average(train_loss)
+            vali_loss = self.vali(vali_data, vali_loader, criterion)
+            test_loss = self.vali(test_data, test_loader, criterion)
+
+            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
+                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            early_stopping(vali_loss, self.model, path)
+            if early_stopping.early_stop:
+                print("Early stopping")
+                break
+
+            if self.args.lradj != 'TST':
+                adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args)
+            else:
+                print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
+
+        for epoch in range(self.args.train_epochs):
+            iter_count = 0
+            train_loss = []
+
+            self.model.train()
+            epoch_time = time.time()
+            # max_memory = 0
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark, batch_cycle) in enumerate(train_loader):
+                iter_count += 1
+                model_optim.zero_grad()
+                batch_x = batch_x.float().to(self.device)
+
+                batch_y = batch_y.float().to(self.device)
+                batch_x_mark = batch_x_mark.float().to(self.device)
+                batch_y_mark = batch_y_mark.float().to(self.device)
+                batch_cycle = batch_cycle.int().to(self.device)
+
+                # decoder input
+                dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
+                dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+
+                # encoder - decoder
+                if self.args.use_amp:
+                    with torch.cuda.amp.autocast():
+                        outputs = self.model(batch_x, batch_cycle, 2)
+                        f_dim = -1 if self.args.features == 'MS' else 0
+                        outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                        batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                        loss = criterion(outputs, batch_y)
+                        train_loss.append(loss.item())
+                else:
+                    outputs = self.model(batch_x, batch_cycle, 2)
+                    f_dim = -1 if self.args.features == 'MS' else 0
+                    outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                    loss = criterion(outputs, batch_y)
+                    train_loss.append(loss.item())
+
+                if (i + 1) % 100 == 0:
+                    print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
+                    speed = (time.time() - time_now) / iter_count
+                    left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)
+                    print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
+                    iter_count = 0
+                    time_now = time.time()
+
+                if self.args.use_amp:
+                    scaler.scale(loss).backward()
+                    scaler.step(model_optim)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    model_optim.step()
+
+                if self.args.lradj == 'TST':
+                    adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
+                    scheduler.step()
+
+            print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
+            train_loss = np.average(train_loss)
+            vali_loss = self.vali(vali_data, vali_loader, criterion)
+            test_loss = self.vali(test_data, test_loader, criterion)
+
+            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
+                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            early_stopping(vali_loss, self.model, path)
+            if early_stopping.early_stop:
+                print("Early stopping")
+                break
+
+            if self.args.lradj != 'TST':
+                adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args)
+            else:
+                print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
+
+        best_model_path = path + '/' + 'checkpoint.pth'
+        self.model.load_state_dict(torch.load(best_model_path))
+
+        return self.model

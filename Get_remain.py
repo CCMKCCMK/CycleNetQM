@@ -91,32 +91,17 @@ if not os.path.exists(folder_path):
 
 Q = _model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
 print(Q.shape)
-trues_last = _data_y[:,:]#[0, :, -1].reshape(-1)
-
-# 计算需要多少个完整周期
-Q_len = Q.shape[0]  # 一个周期的长度
-total_len = len(trues_last)
-num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
-
-# 将Q重复扩展到足够的长度
-Q_repeated = np.tile(Q, [num_cycles,1])[:total_len]
-
-# 计算remain
-trues_remain = trues_last - Q_repeated
-
-# 保留小数
-pd.DataFrame(trues_remain).round(6).to_csv(folder_path + 'trans_remain.csv', index=False)
 
 # 保存Q
-pd.DataFrame(Q).round(6).to_csv(folder_path + 'trans_Q.csv', index=False)
-
+pd.DataFrame(Q, columns=cols_data).round(6).to_csv(folder_path + 'trans_Q.csv', index=False)
+# 保存data
+pd.DataFrame(data, columns=cols_data).round(6).to_csv(folder_path + 'trans_data.csv', index=False)
 Q = inverse_transform(Q)
-
-trues_remain = inverse_transform(trues_remain)
-
-# 保留小数
-pd.DataFrame(trues_remain).round(6).to_csv(folder_path + 'remain.csv', index=False)
+data = inverse_transform(data)
 
 # 保存Q
-pd.DataFrame(Q).round(6).to_csv(folder_path + 'Q.csv', index=False)
-print('done')
+pd.DataFrame(Q, columns=cols_data).round(6).to_csv(folder_path + 'Q.csv', index=False)
+# 保存data
+pd.DataFrame(data, columns=cols_data).round(6).to_csv(folder_path + 'data.csv', index=False)
+
+

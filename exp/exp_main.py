@@ -507,7 +507,9 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
+                        if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                            outputs = self.model(batch_x, batch_cycle)
+                        elif any(substr in self.args.model for substr in {'CycleNet'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
                                  {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
@@ -518,7 +520,9 @@ class Exp_Main(Exp_Basic):
                             else:
                                 outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
+                    if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                        outputs = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'CycleNet'}):
                         outputs = self.model(batch_x, batch_cycle)
                     elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
                         outputs = self.model(batch_x)

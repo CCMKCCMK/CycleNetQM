@@ -3,7 +3,7 @@ import pandas as pd
 import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear,CycleNet,CycleNetMM
+from models import Linear,CycleNet,CycleNetMM,CycleNetQQ
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -264,7 +264,8 @@ class Exp_Main(Exp_Basic):
         model_dict = {
             'Linear': Linear,
             'CycleNet': CycleNet,
-            'CycleNetMM': CycleNetMM
+            'CycleNetMM': CycleNetMM,
+            'CycleNetQQ': CycleNetQQ
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -392,9 +393,7 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNetMM'}):
-                            outputs = self.model(batch_x, batch_cycle, 2)
-                        elif any(substr in self.args.model for substr in {'CycleNet'}):
+                        if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
                                  {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
@@ -411,9 +410,7 @@ class Exp_Main(Exp_Basic):
                         loss = criterion(outputs, batch_y)
                         train_loss.append(loss.item())
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNetMM'}):
-                        outputs = self.model(batch_x, batch_cycle, 2)
-                    elif any(substr in self.args.model for substr in {'CycleNet'}):
+                    if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
                         outputs = self.model(batch_x, batch_cycle)
                     elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
                         outputs = self.model(batch_x)
@@ -456,7 +453,7 @@ class Exp_Main(Exp_Basic):
             print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
             train_loss = np.average(train_loss)
             vali_loss = self.vali(vali_data, vali_loader, criterion)
-            test_loss = self.vali(test_data, test_loader, criterion)
+            test_loss = 1#self.vali(test_data, test_loader, criterion)
 
             print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
                 epoch + 1, train_steps, train_loss, vali_loss, test_loss))
@@ -509,7 +506,7 @@ class Exp_Main(Exp_Basic):
                     with torch.cuda.amp.autocast():
                         if any(substr in self.args.model for substr in {'CycleNetMM'}):
                             outputs = self.model(batch_x, batch_cycle)
-                        elif any(substr in self.args.model for substr in {'CycleNet'}):
+                        elif any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
                                  {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
@@ -522,7 +519,7 @@ class Exp_Main(Exp_Basic):
                 else:
                     if any(substr in self.args.model for substr in {'CycleNetMM'}):
                         outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'CycleNet'}):
+                    elif any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
                         outputs = self.model(batch_x, batch_cycle)
                     elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
                         outputs = self.model(batch_x)
@@ -671,8 +668,9 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
+                        if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ', 'CycleNetMM'}):
                             outputs = self.model(batch_x, batch_cycle)
+                            print('Cyc style!')
                         elif any(substr in self.args.model for substr in
                                  {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
                             outputs = self.model(batch_x)
@@ -722,6 +720,8 @@ class Exp_Main(Exp_Basic):
 
         model_optim = self._select_optimizer()
         criterion = self._select_criterion()
+        train_epochs = self.args.train_epochs
+        learning_rate = self.args.learning_rate
 
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
@@ -729,10 +729,10 @@ class Exp_Main(Exp_Basic):
         scheduler = lr_scheduler.OneCycleLR(optimizer=model_optim,
                                             steps_per_epoch=train_steps,
                                             pct_start=self.args.pct_start,
-                                            epochs=self.args.train_epochs,
-                                            max_lr=self.args.learning_rate)
+                                            epochs=train_epochs,
+                                            max_lr=learning_rate)
 
-        for epoch in range(self.args.train_epochs):
+        for epoch in range(train_epochs):
             iter_count = 0
             train_loss = []
 
@@ -773,7 +773,7 @@ class Exp_Main(Exp_Basic):
                 if (i + 1) % 100 == 0:
                     print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
                     speed = (time.time() - time_now) / iter_count
-                    left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)
+                    left_time = speed * ((train_epochs - epoch) * train_steps - i)
                     print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
                     iter_count = 0
                     time_now = time.time()
@@ -800,6 +800,7 @@ class Exp_Main(Exp_Basic):
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
                 print("Early stopping")
+                train_epochs += epoch
                 break
 
             if self.args.lradj != 'TST':
@@ -807,7 +808,14 @@ class Exp_Main(Exp_Basic):
             else:
                 print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
 
-        for epoch in range(self.args.train_epochs):
+        early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
+        scheduler = lr_scheduler.OneCycleLR(optimizer=model_optim,
+                                            steps_per_epoch=train_steps,
+                                            pct_start=self.args.pct_start,
+                                            epochs=train_epochs,
+                                            max_lr=learning_rate)
+        
+        for epoch in range(train_epochs):
             iter_count = 0
             train_loss = []
 
@@ -848,7 +856,7 @@ class Exp_Main(Exp_Basic):
                 if (i + 1) % 100 == 0:
                     print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
                     speed = (time.time() - time_now) / iter_count
-                    left_time = speed * ((self.args.train_epochs - epoch) * train_steps - i)
+                    left_time = speed * ((train_epochs - epoch) * train_steps - i)
                     print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
                     iter_count = 0
                     time_now = time.time()

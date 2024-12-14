@@ -5,12 +5,13 @@ data_path_name=electricity.csv
 model_id_name=Electricity
 data_name=electricity
 
-model_type='CycleNetMM'
-seq_lens=(96 336 720)
+model_type='mlp'
+seq_lens=(336)
+pred_lens=(96)
 
 for seq_len in "${seq_lens[@]}"
 do
-  for pred_len in "${seq_lens[@]}"
+  for pred_len in "${pred_lens[@]}"
   do
     for random_seed in 1024
     do

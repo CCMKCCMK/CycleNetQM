@@ -62,6 +62,7 @@ class Model(nn.Module):
         # forecasting with channel independence (parameters-sharing)
         y = self.model(x.permute(0, 2, 1)).permute(0, 2, 1)
         # plt.plot(y[-1,:,-1].detach().cpu().numpy())
+        x = y
 
         # add back the cycle of the output data
         y = y + self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
@@ -73,4 +74,4 @@ class Model(nn.Module):
         if self.use_revin:
             y = y * torch.sqrt(seq_var) + seq_mean
 
-        return y
+        return y, x

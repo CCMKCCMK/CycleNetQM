@@ -56,18 +56,19 @@ class Model(nn.Module):
         # Remove the cycle of the input data
         Q = self.cycleQueue(cycle_index, self.seq_len)
         Q = self.seasonal_scaler(Q)
-        x = x / Q
+        x = x - Q
 
         # Forecasting with channel independence
         y = self.model(x.permute(0, 2, 1)).permute(0, 2, 1)
+        x = y
 
         # Add back the cycle of the output data
         Q = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
         Q = self.seasonal_scaler(Q)
-        y = y * Q
+        y = y + Q
 
         # Instance denorm
         if self.use_revin:
             y = y * torch.sqrt(seq_var) + seq_mean
 
-        return y
+        return y, x

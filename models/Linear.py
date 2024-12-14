@@ -18,4 +18,4 @@ class Model(nn.Module):
     def forward(self, x):
         # x: [Batch, Input length, Channel]
         x = self.Linear(x.permute(0,2,1)).permute(0,2,1)
-        return x # [Batch, Output length, Channel]
+        return x, x # [Batch, Output length, Channel]

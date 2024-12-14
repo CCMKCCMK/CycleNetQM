@@ -3,7 +3,7 @@ import pandas as pd
 import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear,CycleNet,CycleNetMM,CycleNetQQ
+from models import Linear,CycleNet,CycleNetMM,CycleNetQQ,CycleNetQM,GRU
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -60,7 +60,6 @@ def plot_comparison(training_data, weights, residual, save_dir='./results'):
     plt.close()
     
     print(f"Comparison plot saved as: comparison_{timestamp}.png")
-
 
 def detailed_analysis(trues_remain, preds_remain, Q, trues_last, preds_last, Q_repeated, save_dir='./results'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -265,7 +264,9 @@ class Exp_Main(Exp_Basic):
             'Linear': Linear,
             'CycleNet': CycleNet,
             'CycleNetMM': CycleNetMM,
-            'CycleNetQQ': CycleNetQQ
+            'CycleNetQQ': CycleNetQQ,
+            'CycleNetQM': CycleNetQM,
+            'GRU': GRU
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -303,12 +304,10 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNetMM'}):
-                            outputs = self.model(batch_x, batch_cycle)
-                        elif any(substr in self.args.model for substr in {'CycleNet'}):
+                        if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                                 {'Linear', 'GRU'}):
                             outputs = self.model(batch_x)
                         else:
                             if self.args.output_attention:
@@ -316,11 +315,9 @@ class Exp_Main(Exp_Basic):
                             else:
                                 outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNetMM'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'CycleNet'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                    if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
+                            outputs = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU'}):
                         outputs = self.model(batch_x)
                     else:
                         if self.args.output_attention:
@@ -342,7 +339,7 @@ class Exp_Main(Exp_Basic):
         return total_loss
 
     def train(self, setting):
-        if self.args.model == 'CycleNetMM':
+        if self.args.model in ['CycleNetMM','CycleNetQM']:
             return self.train_CycleNetMM_Q(setting)
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')
@@ -396,7 +393,7 @@ class Exp_Main(Exp_Basic):
                         if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                                 {'Linear', 'GRU'}):
                             outputs = self.model(batch_x)
                         else:
                             if self.args.output_attention:
@@ -412,7 +409,7 @@ class Exp_Main(Exp_Basic):
                 else:
                     if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
                         outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU'}):
                         outputs = self.model(batch_x)
                     else:
                         if self.args.output_attention:
@@ -504,12 +501,10 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNetMM'}):
-                            outputs = self.model(batch_x, batch_cycle)
-                        elif any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
+                        if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
                             outputs = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                                 {'Linear', 'GRU'}):
                             outputs = self.model(batch_x)
                         else:
                             if self.args.output_attention:
@@ -517,11 +512,9 @@ class Exp_Main(Exp_Basic):
                             else:
                                 outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNetMM'}):
+                    if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
                         outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU'}):
                         outputs = self.model(batch_x)
                     else:
                         if self.args.output_attention:
@@ -668,11 +661,11 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ', 'CycleNetMM'}):
+                        if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ', 'CycleNetMM', 'CycleNetQM'}):
                             outputs = self.model(batch_x, batch_cycle)
                             print('Cyc style!')
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF', 'GRU'}):
                             outputs = self.model(batch_x)
                         else:
                             if self.args.output_attention:
@@ -680,9 +673,9 @@ class Exp_Main(Exp_Basic):
                             else:
                                 outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
+                    if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ', 'CycleNetMM', 'CycleNetQM'}):
                         outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU'}):
                         outputs = self.model(batch_x)
                     else:
                         if self.args.output_attention:
@@ -720,7 +713,7 @@ class Exp_Main(Exp_Basic):
 
         model_optim = self._select_optimizer()
         criterion = self._select_criterion()
-        train_epochs = self.args.train_epochs
+        train_epochs = self.args.train_epochs / 2
         learning_rate = self.args.learning_rate
 
         if self.args.use_amp:

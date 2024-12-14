@@ -59,6 +59,7 @@ class Model(nn.Module):
 
         # forecasting with channel independence (parameters-sharing)
         y = self.model(x.permute(0, 2, 1)).permute(0, 2, 1)
+        x = y
 
         if train_step == 2:
             with torch.no_grad():
@@ -73,4 +74,4 @@ class Model(nn.Module):
         if self.use_revin:
             y = y * torch.sqrt(seq_var) + seq_mean
 
-        return y
+        return y, x

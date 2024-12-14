@@ -60,7 +60,6 @@ class Model(nn.Module):
 
         # Forecasting with channel independence
         y = self.model(x.permute(0, 2, 1)).permute(0, 2, 1)
-        x = y
 
         # Add back the cycle of the output data
         Q = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)

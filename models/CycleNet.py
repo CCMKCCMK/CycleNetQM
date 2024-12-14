@@ -73,4 +73,4 @@ class Model(nn.Module):
         if self.use_revin:
             y = y * torch.sqrt(seq_var) + seq_mean
 
-        return y
+        return y, x

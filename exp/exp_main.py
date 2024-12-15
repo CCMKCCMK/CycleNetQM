@@ -3,7 +3,7 @@ import pandas as pd
 import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear,CycleNet,CycleNetMM,CycleNetQQ,CycleNetQM,GRU
+from models import Linear,CycleNet,CycleNetMM,CycleNetQQ,CycleNetQM,GRU, LSTM
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -266,7 +266,8 @@ class Exp_Main(Exp_Basic):
             'CycleNetMM': CycleNetMM,
             'CycleNetQQ': CycleNetQQ,
             'CycleNetQM': CycleNetQM,
-            'GRU': GRU
+            'GRU': GRU,
+            'LSTM': LSTM
         }
         model = model_dict[self.args.model].Model(self.args).float()
 

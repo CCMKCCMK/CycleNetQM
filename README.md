@@ -1,4 +1,4 @@
-# CycleNet++: Enhanced Time Series Forecasting
+# CycleNetQM: Enhanced Time Series Forecasting
 
 An improved implementation of [CycleNet](https://github.com/ACAT-SCUT/CycleNet) developed as part of the COMP4434 course project.
 
@@ -20,7 +20,7 @@ Detailed implementation and analysis can be found in our group report.
 
 ## Performance
 
-Our model **CycleNet++** (a.k.a. CycleNetQM) achieves state-of-the-art results on the [electricity dataset](https://drive.google.com/file/d/1bNbw1y8VYp-8pkRTqbjoW-TA-G8T0EQf/view), outperforming several baseline models including:
+Our model **CycleNetQM** achieves state-of-the-art results on the [electricity dataset](https://drive.google.com/file/d/1bNbw1y8VYp-8pkRTqbjoW-TA-G8T0EQf/view), outperforming several baseline models including:
 
 - Linear
 - LSTM
@@ -37,6 +37,27 @@ The conda environment requirements are identical to the original [CycleNet repos
 ### Pre-trained Models
 
 Pre-trained model checkpoints are available on [Google Drive](https://drive.google.com/file/d/1hQkVfMomVv1VSVVTVM2ZX1Cqo3Ve0Qe1/view?usp=sharing).
+
+### Train & Run
+To train or test the model:
+
+```sh run_main.sh```
+
+Modify run_main.sh to:
+
+Change models you want to train using model_names
+Toggle training/testing with is_training (1 for training & testing, 0 for testing)
+Change the backbone of CycleNet using model_types
+
+### Model variants available:
+
+ - CycleNetQQ: Seasonal scalar only
+ - CycleNetMM: Step-wise training only
+ - CycleNetQM: Combined approach (our main model)
+ - CycleNet
+ - Linear
+ - LSTM
+ - GRU
 
 ## Acknowledgments
 

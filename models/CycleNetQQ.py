@@ -19,11 +19,11 @@ class RecurrentCycle(torch.nn.Module):
         gather_index = (index.view(-1, 1) + torch.arange(length, device=index.device).view(1, -1)) % self.cycle_len    
         return self.data[gather_index]
 
-
 class Model(nn.Module):
     def __init__(self, configs):
         super(Model, self).__init__()
 
+        # Existing initializations...
         self.seq_len = configs.seq_len
         self.pred_len = configs.pred_len
         self.enc_in = configs.enc_in
@@ -33,7 +33,6 @@ class Model(nn.Module):
         self.use_revin = configs.use_revin
 
         self.cycleQueue = RecurrentCycle(cycle_len=self.cycle_len, channel_size=self.enc_in)
-
         assert self.model_type in ['linear', 'mlp']
         if self.model_type == 'linear':
             self.model = nn.Linear(self.seq_len, self.pred_len)
@@ -43,33 +42,31 @@ class Model(nn.Module):
                 nn.ReLU(),
                 nn.Linear(self.d_model, self.pred_len)
             )
+        
+        # Add seasonal scaler
+        self.seasonal_scaler = nn.Linear(self.enc_in, self.enc_in)
 
     def forward(self, x, cycle_index):
-        # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-
-        # instance norm
+        # Existing forward steps...
         if self.use_revin:
             seq_mean = torch.mean(x, dim=1, keepdim=True)
             seq_var = torch.var(x, dim=1, keepdim=True) + 1e-5
             x = (x - seq_mean) / torch.sqrt(seq_var)
-        # plt.plot(x[-1,:,-1].detach().cpu().numpy())
 
-        # remove the cycle of the input data
-        x = x - self.cycleQueue(cycle_index, self.seq_len)
-        # plt.plot(x[-1,:,-1].detach().cpu().numpy())
-        # plt.plot(self.cycleQueue(cycle_index, self.seq_len)[-1,:,-1].detach().cpu().numpy())
+        # Remove the cycle of the input data
+        Q = self.cycleQueue(cycle_index, self.seq_len)
+        Q = self.seasonal_scaler(Q)
+        x = x - Q
 
-        # forecasting with channel independence (parameters-sharing)
+        # Forecasting with channel independence
         y = self.model(x.permute(0, 2, 1)).permute(0, 2, 1)
-        # plt.plot(y[-1,:,-1].detach().cpu().numpy())
 
-        # add back the cycle of the output data
-        y = y + self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+        # Add back the cycle of the output data
+        Q = self.cycleQueue((cycle_index + self.seq_len) % self.cycle_len, self.pred_len)
+        Q = self.seasonal_scaler(Q)
+        y = y + Q
 
-        # plt.savefig('./checkimg/'+str(time.time())+'test.png', bbox_inches='tight')
-        # plt.close()
-
-        # instance denorm
+        # Instance denorm
         if self.use_revin:
             y = y * torch.sqrt(seq_var) + seq_mean
 

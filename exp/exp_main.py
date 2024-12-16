@@ -3,7 +3,7 @@ import pandas as pd
 import torch.amp
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from models import Linear,CycleNet
+from models import Linear,CycleNet,CycleNetMM,CycleNetQQ,CycleNetQM,GRU, LSTM
 from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
 from utils.metrics import metric
 
@@ -60,9 +60,6 @@ def plot_comparison(training_data, weights, residual, save_dir='./results'):
     plt.close()
     
     print(f"Comparison plot saved as: comparison_{timestamp}.png")
-
-# 使用示例:
-# plot_comparison(trues_last[-len(Q_repeated):], Q_repeated, trues_remain)
 
 def detailed_analysis(trues_remain, preds_remain, Q, trues_last, preds_last, Q_repeated, save_dir='./results'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -257,7 +254,6 @@ def detailed_analysis(trues_remain, preds_remain, Q, trues_last, preds_last, Q_r
     print(f"Data: data_{timestamp}.csv")
     print(f"Statistics: statistics_{timestamp}.txt")
 
-
 class Exp_Main(Exp_Basic):
     def __init__(self, args):
         super(Exp_Main, self).__init__(args)
@@ -266,6 +262,11 @@ class Exp_Main(Exp_Basic):
         model_dict = {
             'Linear': Linear,
             'CycleNet': CycleNet,
+            'CycleNetMM': CycleNetMM,
+            'CycleNetQQ': CycleNetQQ,
+            'CycleNetQM': CycleNetQM,
+            'GRU': GRU,
+            'LSTM': LSTM
         }
         model = model_dict[self.args.model].Model(self.args).float()
 
@@ -303,26 +304,18 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
-                            outputs = self.model(batch_x, batch_cycle)
+                        if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
+                            outputs, _ = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                            outputs = self.model(batch_x)
-                        else:
-                            if self.args.output_attention:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-                            else:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                                 {'Linear', 'GRU', 'LSTM'}):
+                            outputs, _ = self.model(batch_x)
+                        
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                        outputs = self.model(batch_x)
-                    else:
-                        if self.args.output_attention:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-                        else:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                    if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
+                            outputs, _ = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU', 'LSTM'}):
+                        outputs, _ = self.model(batch_x)
+    
                 f_dim = -1 if self.args.features == 'MS' else 0
                 outputs = outputs[:, -self.args.pred_len:, f_dim:]
                 batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
@@ -338,6 +331,8 @@ class Exp_Main(Exp_Basic):
         return total_loss
 
     def train(self, setting):
+        if self.args.model in ['CycleNetMM','CycleNetQM']:
+            return self.train_CycleNetMM_Q(setting)
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')
         test_data, test_loader = self._get_data(flag='test')
@@ -387,16 +382,11 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
-                            outputs = self.model(batch_x, batch_cycle)
+                        if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
+                            outputs, _ = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                            outputs = self.model(batch_x)
-                        else:
-                            if self.args.output_attention:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-                            else:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                                 {'Linear', 'GRU', 'LSTM'}):
+                            outputs, _ = self.model(batch_x)
 
                         f_dim = -1 if self.args.features == 'MS' else 0
                         outputs = outputs[:, -self.args.pred_len:, f_dim:]
@@ -404,16 +394,11 @@ class Exp_Main(Exp_Basic):
                         loss = criterion(outputs, batch_y)
                         train_loss.append(loss.item())
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                        outputs = self.model(batch_x)
-                    else:
-                        if self.args.output_attention:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-
-                        else:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark, batch_y)
+                    if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ'}):
+                        outputs, _ = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU', 'LSTM'}):
+                        outputs, _ = self.model(batch_x)
+                    
                     # print(outputs.shape,batch_y.shape)
                     f_dim = -1 if self.args.features == 'MS' else 0
                     outputs = outputs[:, -self.args.pred_len:, f_dim:]
@@ -447,7 +432,7 @@ class Exp_Main(Exp_Basic):
             print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
             train_loss = np.average(train_loss)
             vali_loss = self.vali(vali_data, vali_loader, criterion)
-            test_loss = self.vali(test_data, test_loader, criterion)
+            test_loss = 1#self.vali(test_data, test_loader, criterion)
 
             print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
                 epoch + 1, train_steps, train_loss, vali_loss, test_loss))
@@ -476,8 +461,7 @@ class Exp_Main(Exp_Basic):
             self.model.load_state_dict(torch.load(os.path.join('./checkpoints/' + setting, 'checkpoint.pth')))
 
         preds = []
-        trues = []
-        # inputx = []
+        trues = []        
         folder_path = './test_results/' + setting + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
@@ -498,27 +482,18 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
-                            outputs = self.model(batch_x, batch_cycle)
+                        if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
+                            outputs, remain = self.model(batch_x, batch_cycle)
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                            outputs = self.model(batch_x)
-                        else:
-                            if self.args.output_attention:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-                            else:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                                 {'Linear', 'GRU', 'LSTM'}):
+                            outputs, remain = self.model(batch_x)
+                        
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                        outputs = self.model(batch_x)
-                    else:
-                        if self.args.output_attention:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-
-                        else:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                    if any(substr in self.args.model for substr in {'CycleNetMM', 'CycleNetQQ', 'CycleNetQM', 'CycleNet'}):
+                        outputs, remain = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU', 'LSTM'}):
+                        outputs, remain = self.model(batch_x)
+                   
 
                 f_dim = -1 if self.args.features == 'MS' else 0
                 # print(outputs.shape,batch_y.shape)
@@ -526,6 +501,7 @@ class Exp_Main(Exp_Basic):
                 batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
                 outputs = outputs.detach().cpu().numpy()
                 batch_y = batch_y.detach().cpu().numpy()
+                remain = remain.detach().cpu().numpy()
 
                 pred = outputs  # outputs.detach().cpu().numpy()  # .squeeze()
                 true = batch_y  # batch_y.detach().cpu().numpy()  # .squeeze()
@@ -541,35 +517,16 @@ class Exp_Main(Exp_Basic):
                     np.savetxt(os.path.join(folder_path, str(i) + '.txt'), pd)
                     np.savetxt(os.path.join(folder_path, str(i) + 'true.txt'), gt)
 
-                    # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-                    print(batch_x.shape, batch_cycle.shape)
-                    Q = self.model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
-                    preds_last = pred[0, :, -1].reshape(-1)  # 展平预测结果
-                    trues_last = true[0, :, -1].reshape(-1)
-
-                    # 计算需要多少个完整周期
-                    Q_len = Q.shape[0]  # 一个周期的长度
-                    total_len = len(preds_last)
-                    num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
-
-                    Q = np.roll(Q, -self.args.seq_len-batch_cycle[0].detach().cpu().numpy(), axis=0)
-                    print(self.args.seq_len, batch_cycle[0].detach().cpu().numpy())
-
-                    # 将Q重复扩展到足够的长度
-                    Q_repeated = np.tile(Q[:, -1], num_cycles)[:total_len]
-
-                    # 计算remain
-                    pred_remain = preds_last[-len(Q_repeated):] - Q_repeated
-                    trues_remain = trues_last[-len(Q_repeated):] - Q_repeated
-
-                    detailed_analysis(trues_remain,pred_remain, Q, trues_last, preds_last, Q_repeated, folder_path)
-                    # 使用最后10个周期的数据                                     
-                    plot_comparison(
-                        training_data=trues_last[-len(Q_repeated):],  # 原始训练数据
-                        weights=Q_repeated,                           # 展开的周期性权重
-                        residual=trues_remain,                         # 残差数据
-                        save_dir=folder_path
-                    )
+                    try:
+                        _time = datetime.now().strftime('%Y%m%d_%H%M%S')
+                        plt.plot(remain[0, :, -1], color='blue', label='Remain Data')
+                        plt.plot(true[0, :, -1], color='red', label='Origin Data')
+                        plt.grid(True)
+                        plt.legend()
+                        plt.savefig(os.path.join(folder_path, f'remain_{_time}.png'))
+                        plt.close()
+                    except:
+                        print('error')
 
         if self.args.test_flop:
             test_params_flop(self.model, (batch_x.shape[1], batch_x.shape[2]))
@@ -580,36 +537,7 @@ class Exp_Main(Exp_Basic):
 
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
-        # inputx = inputx.reshape(-1, inputx.shape[-2], inputx.shape[-1])
-
-        # # x: (batch_size, seq_len, enc_in), cycle_index: (batch_size,)
-        # Q = self.model.cycleQueue.data.detach().cpu().numpy()  # 一个周期的数据
-        # preds_last = preds[:, :, -1].reshape(-1)[:]  # 展平预测结果
-        # trues_last = trues[:, :, -1].reshape(-1)[:]
-        # # 计算需要多少个完整周期
-        # Q_len = Q.shape[0]  # 一个周期的长度
-        # total_len = len(preds_last)
-        # num_cycles = (total_len + Q_len - 1) // Q_len  # 向上取整得到需要的周期数
-
-        # Q = np.roll(Q, -96, axis=0)
-
-        # # 将Q重复扩展到足够的长度
-        # Q_repeated = np.tile(Q[:, -1], num_cycles)[:total_len]
-
-        # # 计算remain
-        # pred_remain = preds_last[-len(Q_repeated):] - Q_repeated
-        # trues_remain = trues_last[-len(Q_repeated):] - Q_repeated
-
-        # detailed_analysis(trues_remain,pred_remain, Q, trues_last, preds_last, Q_repeated, folder_path)
-        # # 使用最后10个周期的数据                                     
-        # plot_comparison(
-        #     training_data=trues_last[-len(Q_repeated):],  # 原始训练数据
-        #     weights=Q_repeated,                           # 展开的周期性权重
-        #     residual=trues_remain,                         # 残差数据
-        #     save_dir=folder_path
-        # )
         
-        # result save
         folder_path = './results/' + setting + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
@@ -622,11 +550,6 @@ class Exp_Main(Exp_Basic):
         f.write('\n')
         f.write('\n')
         f.close()
-
-        # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
-        # np.save(folder_path + 'pred.npy', preds)
-        # np.save(folder_path + 'true.npy', trues)
-        # np.save(folder_path + 'x.npy', inputx)
         return
 
     def predict(self, setting, load=False):
@@ -655,26 +578,19 @@ class Exp_Main(Exp_Basic):
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
-                        if any(substr in self.args.model for substr in {'CycleNet'}):
-                            outputs = self.model(batch_x, batch_cycle)
+                        if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ', 'CycleNetMM', 'CycleNetQM'}):
+                            outputs, _ = self.model(batch_x, batch_cycle)
+                            print('Cyc style!')
                         elif any(substr in self.args.model for substr in
-                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                            outputs = self.model(batch_x)
-                        else:
-                            if self.args.output_attention:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-                            else:
-                                outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                                 {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF', 'GRU', 'LSTM'}):
+                            outputs, _ = self.model(batch_x)
+                
                 else:
-                    if any(substr in self.args.model for substr in {'CycleNet'}):
-                        outputs = self.model(batch_x, batch_cycle)
-                    elif any(substr in self.args.model for substr in {'Linear', 'MLP', 'SegRNN', 'TST', 'SparseTSF'}):
-                        outputs = self.model(batch_x)
-                    else:
-                        if self.args.output_attention:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
-                        else:
-                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                    if any(substr in self.args.model for substr in {'CycleNet', 'CycleNetQQ', 'CycleNetMM', 'CycleNetQM'}):
+                        outputs, _ = self.model(batch_x, batch_cycle)
+                    elif any(substr in self.args.model for substr in {'Linear', 'GRU', 'LSTM'}):
+                        outputs, _ = self.model(batch_x)
+                    
                 pred = outputs.detach().cpu().numpy()  # .squeeze()
                 preds.append(pred)
 
@@ -689,3 +605,194 @@ class Exp_Main(Exp_Basic):
         np.save(folder_path + 'real_prediction.npy', preds)
 
         return
+    
+    def train_CycleNetMM_Q(self, setting):
+        train_data, train_loader = self._get_data(flag='train')
+        vali_data, vali_loader = self._get_data(flag='val')
+        test_data, test_loader = self._get_data(flag='test')
+
+        path = os.path.join(self.args.checkpoints, setting)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        time_now = time.time()
+
+        train_steps = len(train_loader)
+        early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
+
+        model_optim = self._select_optimizer()
+        criterion = self._select_criterion()
+        train_epochs = self.args.train_epochs // 2
+        learning_rate = self.args.learning_rate
+
+        if self.args.use_amp:
+            scaler = torch.cuda.amp.GradScaler()
+
+        scheduler = lr_scheduler.OneCycleLR(optimizer=model_optim,
+                                            steps_per_epoch=train_steps,
+                                            pct_start=self.args.pct_start,
+                                            epochs=train_epochs,
+                                            max_lr=learning_rate)
+
+        for epoch in range(train_epochs):
+            iter_count = 0
+            train_loss = []
+
+            self.model.train()
+            epoch_time = time.time()
+            # max_memory = 0
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark, batch_cycle) in enumerate(train_loader):
+                iter_count += 1
+                model_optim.zero_grad()
+                batch_x = batch_x.float().to(self.device)
+
+                batch_y = batch_y.float().to(self.device)
+                batch_x_mark = batch_x_mark.float().to(self.device)
+                batch_y_mark = batch_y_mark.float().to(self.device)
+                batch_cycle = batch_cycle.int().to(self.device)
+
+                # decoder input
+                dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
+                dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+
+                # encoder - decoder
+                if self.args.use_amp:
+                    with torch.cuda.amp.autocast():
+                        outputs, remain = self.model(batch_x, batch_cycle, 1)
+                        f_dim = -1 if self.args.features == 'MS' else 0
+                        outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                        batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                        loss = criterion(outputs, batch_y)
+                        train_loss.append(loss.item())
+                else:
+                    outputs, remain = self.model(batch_x, batch_cycle, 1)
+                    f_dim = -1 if self.args.features == 'MS' else 0
+                    outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                    loss = criterion(outputs, batch_y)
+                    train_loss.append(loss.item())
+
+                if (i + 1) % 100 == 0:
+                    print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
+                    speed = (time.time() - time_now) / iter_count
+                    left_time = speed * ((train_epochs - epoch) * train_steps - i)
+                    print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
+                    iter_count = 0
+                    time_now = time.time()
+
+                if self.args.use_amp:
+                    scaler.scale(loss).backward()
+                    scaler.step(model_optim)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    model_optim.step()
+
+                if self.args.lradj == 'TST':
+                    adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
+                    scheduler.step()
+
+            print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
+            train_loss = np.average(train_loss)
+            vali_loss = self.vali(vali_data, vali_loader, criterion)
+            test_loss = self.vali(test_data, test_loader, criterion)
+
+            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
+                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            early_stopping(vali_loss, self.model, path)
+            if early_stopping.early_stop:
+                print("Early stopping")
+                train_epochs += epoch
+                break
+
+            if self.args.lradj != 'TST':
+                adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args)
+            else:
+                print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
+
+        early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
+        scheduler = lr_scheduler.OneCycleLR(optimizer=model_optim,
+                                            steps_per_epoch=train_steps,
+                                            pct_start=self.args.pct_start,
+                                            epochs=train_epochs,
+                                            max_lr=learning_rate)
+        
+        for epoch in range(train_epochs):
+            iter_count = 0
+            train_loss = []
+
+            self.model.train()
+            epoch_time = time.time()
+            # max_memory = 0
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark, batch_cycle) in enumerate(train_loader):
+                iter_count += 1
+                model_optim.zero_grad()
+                batch_x = batch_x.float().to(self.device)
+
+                batch_y = batch_y.float().to(self.device)
+                batch_x_mark = batch_x_mark.float().to(self.device)
+                batch_y_mark = batch_y_mark.float().to(self.device)
+                batch_cycle = batch_cycle.int().to(self.device)
+
+                # decoder input
+                dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
+                dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+
+                # encoder - decoder
+                if self.args.use_amp:
+                    with torch.cuda.amp.autocast():
+                        outputs, remain = self.model(batch_x, batch_cycle, 2)
+                        f_dim = -1 if self.args.features == 'MS' else 0
+                        outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                        batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                        loss = criterion(outputs, batch_y)
+                        train_loss.append(loss.item())
+                else:
+                    outputs, remain = self.model(batch_x, batch_cycle, 2)
+                    f_dim = -1 if self.args.features == 'MS' else 0
+                    outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+                    loss = criterion(outputs, batch_y)
+                    train_loss.append(loss.item())
+
+                if (i + 1) % 100 == 0:
+                    print("\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
+                    speed = (time.time() - time_now) / iter_count
+                    left_time = speed * ((train_epochs - epoch) * train_steps - i)
+                    print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
+                    iter_count = 0
+                    time_now = time.time()
+
+                if self.args.use_amp:
+                    scaler.scale(loss).backward()
+                    scaler.step(model_optim)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    model_optim.step()
+
+                if self.args.lradj == 'TST':
+                    adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
+                    scheduler.step()
+
+            print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
+            train_loss = np.average(train_loss)
+            vali_loss = self.vali(vali_data, vali_loader, criterion)
+            test_loss = self.vali(test_data, test_loader, criterion)
+
+            print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
+                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            early_stopping(vali_loss, self.model, path)
+            if early_stopping.early_stop:
+                print("Early stopping")
+                break
+
+            if self.args.lradj != 'TST':
+                adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args)
+            else:
+                print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
+
+        best_model_path = path + '/' + 'checkpoint.pth'
+        self.model.load_state_dict(torch.load(best_model_path))
+
+        return self.model

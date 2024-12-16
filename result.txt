@@ -1,0 +1,384 @@
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_mlp_seed1024  
+mse:0.13551990687847137, mae:0.22936441004276276
+
+Electricity_96_192_CycleNet_electricity_ftM_sl96_pl192_cycle168_mlp_seed1024  
+mse:0.15331174433231354, mae:0.24642391502857208
+
+Electricity_96_336_CycleNet_electricity_ftM_sl96_pl336_cycle168_mlp_seed1024  
+mse:0.17162729799747467, mae:0.2657650113105774
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_mlp_seed1024  
+mse:0.2173415571451187, mae:0.30416956543922424
+
+Electricity_192_96_CycleNet_electricity_ftM_sl192_pl96_cycle168_mlp_seed1024  
+mse:0.1283119022846222, mae:0.22270703315734863
+
+Electricity_192_192_CycleNet_electricity_ftM_sl192_pl192_cycle168_mlp_seed1024  
+mse:0.14865849912166595, mae:0.2424168437719345
+
+Electricity_192_336_CycleNet_electricity_ftM_sl192_pl336_cycle168_mlp_seed1024  
+mse:0.1656898707151413, mae:0.2604844272136688
+
+Electricity_192_720_CycleNet_electricity_ftM_sl192_pl720_cycle168_mlp_seed1024  
+mse:0.20489497482776642, mae:0.29715150594711304
+
+Electricity_336_96_CycleNet_electricity_ftM_sl336_pl96_cycle168_mlp_seed1024  
+mse:0.12985382974147797, mae:0.22403086721897125
+
+Electricity_336_192_CycleNet_electricity_ftM_sl336_pl192_cycle168_mlp_seed1024  
+mse:0.14743877947330475, mae:0.2420307695865631
+
+Electricity_336_336_CycleNet_electricity_ftM_sl336_pl336_cycle168_mlp_seed1024  
+mse:0.16578520834445953, mae:0.26197388768196106
+
+Electricity_336_720_CycleNet_electricity_ftM_sl336_pl720_cycle168_mlp_seed1024  
+mse:0.20256294310092926, mae:0.29678279161453247
+
+Electricity_720_96_CycleNet_electricity_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12981578707695007, mae:0.22635844349861145
+
+Electricity_720_192_CycleNet_electricity_ftM_sl720_pl192_cycle168_mlp_seed1024  
+mse:0.1476621776819229, mae:0.24421490728855133
+
+Electricity_720_336_CycleNet_electricity_ftM_sl720_pl336_cycle168_mlp_seed1024  
+mse:0.16273973882198334, mae:0.26121705770492554
+
+Electricity_720_720_CycleNet_electricity_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.20186930894851685, mae:0.2981753945350647
+
+Electricity_96_96_CycleNetQM_electricity_ftM_sl96_pl96_cycle168_mlp_seed1024  
+mse:0.1377354860305786, mae:0.2312936633825302
+
+Electricity_96_192_CycleNetQM_electricity_ftM_sl96_pl192_cycle168_mlp_seed1024  
+mse:0.1537850946187973, mae:0.24622344970703125
+
+Electricity_96_336_CycleNetQM_electricity_ftM_sl96_pl336_cycle168_mlp_seed1024  
+mse:0.17094695568084717, mae:0.2638360559940338
+
+Electricity_96_720_CycleNetQM_electricity_ftM_sl96_pl720_cycle168_mlp_seed1024  
+mse:0.2082071751356125, mae:0.2959462106227875
+
+Electricity_192_96_CycleNetQM_electricity_ftM_sl192_pl96_cycle168_mlp_seed1024  
+mse:0.12999580800533295, mae:0.22385439276695251
+
+Electricity_192_192_CycleNetQM_electricity_ftM_sl192_pl192_cycle168_mlp_seed1024  
+mse:0.14697398245334625, mae:0.23995116353034973
+
+Electricity_192_336_CycleNetQM_electricity_ftM_sl192_pl336_cycle168_mlp_seed1024  
+mse:0.16444365680217743, mae:0.25786611437797546
+
+Electricity_192_720_CycleNetQM_electricity_ftM_sl192_pl720_cycle168_mlp_seed1024  
+mse:0.20319823920726776, mae:0.292237251996994
+
+Electricity_336_96_CycleNetQM_electricity_ftM_sl336_pl96_cycle168_mlp_seed1024  
+mse:0.1289767324924469, mae:0.22316285967826843
+
+Electricity_336_192_CycleNetQM_electricity_ftM_sl336_pl192_cycle168_mlp_seed1024  
+mse:0.14730767905712128, mae:0.2425501048564911
+
+Electricity_336_336_CycleNetQM_electricity_ftM_sl336_pl336_cycle168_mlp_seed1024  
+mse:0.16219373047351837, mae:0.2571551203727722
+
+Electricity_336_720_CycleNetQM_electricity_ftM_sl336_pl720_cycle168_mlp_seed1024  
+mse:0.20138627290725708, mae:0.2910800278186798
+
+Electricity_720_96_CycleNetQM_electricity_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12988503277301788, mae:0.22530655562877655
+
+Electricity_720_192_CycleNetQM_electricity_ftM_sl720_pl192_cycle168_mlp_seed1024  
+mse:0.14643613994121552, mae:0.2409244179725647
+
+Electricity_720_336_CycleNetQM_electricity_ftM_sl720_pl336_cycle168_mlp_seed1024  
+mse:0.16257260739803314, mae:0.2582683861255646
+
+Electricity_720_720_CycleNetQM_electricity_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.19872641563415527, mae:0.2921578884124756
+
+Electricity_96_192_Linear_electricity_ftM_sl96_pl192_cycle168_linear_seed1024  
+mse:0.19634117186069489, mae:0.2843782901763916
+
+Electricity_96_96_Linear_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.19705885648727417, mae:0.2815260589122772
+
+Electricity_96_336_Linear_electricity_ftM_sl96_pl336_cycle168_linear_seed1024  
+mse:0.2096031755208969, mae:0.3002549707889557
+
+Electricity_96_720_Linear_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.24476785957813263, mae:0.33261460065841675
+
+Electricity_192_192_Linear_electricity_ftM_sl192_pl192_cycle168_linear_seed1024  
+mse:0.16510659456253052, mae:0.2613368034362793
+
+Electricity_192_96_Linear_electricity_ftM_sl192_pl96_cycle168_linear_seed1024  
+mse:0.15340763330459595, mae:0.24988579750061035
+
+Electricity_192_336_Linear_electricity_ftM_sl192_pl336_cycle168_linear_seed1024  
+mse:0.18102556467056274, mae:0.27915242314338684
+
+Electricity_192_720_Linear_electricity_ftM_sl192_pl720_cycle168_linear_seed1024  
+mse:0.21537916362285614, mae:0.3115008473396301
+
+Electricity_336_192_Linear_electricity_ftM_sl336_pl192_cycle168_linear_seed1024  
+mse:0.1549462229013443, mae:0.25228145718574524
+
+Electricity_336_96_Linear_electricity_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.1414787918329239, mae:0.239480659365654
+
+Electricity_336_336_Linear_electricity_ftM_sl336_pl336_cycle168_linear_seed1024  
+mse:0.170430526137352, mae:0.26942887902259827
+
+Electricity_336_720_Linear_electricity_ftM_sl336_pl720_cycle168_linear_seed1024  
+mse:0.20495940744876862, mae:0.30259236693382263
+
+Electricity_720_192_Linear_electricity_ftM_sl720_pl192_cycle168_linear_seed1024  
+mse:0.1482013612985611, mae:0.24544015526771545
+
+Electricity_720_96_Linear_electricity_ftM_sl720_pl96_cycle168_linear_seed1024  
+mse:0.13370977342128754, mae:0.2312442511320114
+
+Electricity_720_336_Linear_electricity_ftM_sl720_pl336_cycle168_linear_seed1024  
+mse:0.1632421612739563, mae:0.26245713233947754
+
+Electricity_720_720_Linear_electricity_ftM_sl720_pl720_cycle168_linear_seed1024  
+mse:0.197729229927063, mae:0.2956516444683075
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_mlp_seed1024  
+mse:0.13551990687847137, mae:0.22936441004276276
+
+Electricity_96_192_CycleNet_electricity_ftM_sl96_pl192_cycle168_mlp_seed1024  
+mse:0.15331174433231354, mae:0.24642391502857208
+
+Electricity_96_336_CycleNet_electricity_ftM_sl96_pl336_cycle168_mlp_seed1024  
+mse:0.17162729799747467, mae:0.2657650113105774
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_mlp_seed1024  
+mse:0.2173415571451187, mae:0.30416956543922424
+
+Electricity_192_96_CycleNet_electricity_ftM_sl192_pl96_cycle168_mlp_seed1024  
+mse:0.1283119022846222, mae:0.22270703315734863
+
+Electricity_192_192_CycleNet_electricity_ftM_sl192_pl192_cycle168_mlp_seed1024  
+mse:0.14865849912166595, mae:0.2424168437719345
+
+Electricity_192_336_CycleNet_electricity_ftM_sl192_pl336_cycle168_mlp_seed1024  
+mse:0.1656898707151413, mae:0.2604844272136688
+
+Electricity_192_720_CycleNet_electricity_ftM_sl192_pl720_cycle168_mlp_seed1024  
+mse:0.20489497482776642, mae:0.29715150594711304
+
+Electricity_336_96_CycleNet_electricity_ftM_sl336_pl96_cycle168_mlp_seed1024  
+mse:0.12985382974147797, mae:0.22403086721897125
+
+Electricity_336_192_CycleNet_electricity_ftM_sl336_pl192_cycle168_mlp_seed1024  
+mse:0.14743877947330475, mae:0.2420307695865631
+
+Electricity_336_336_CycleNet_electricity_ftM_sl336_pl336_cycle168_mlp_seed1024  
+mse:0.16578520834445953, mae:0.26197388768196106
+
+Electricity_336_720_CycleNet_electricity_ftM_sl336_pl720_cycle168_mlp_seed1024  
+mse:0.20256294310092926, mae:0.29678279161453247
+
+Electricity_720_96_CycleNet_electricity_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12981578707695007, mae:0.22635844349861145
+
+Electricity_720_192_CycleNet_electricity_ftM_sl720_pl192_cycle168_mlp_seed1024  
+mse:0.1476621776819229, mae:0.24421490728855133
+
+Electricity_720_336_CycleNet_electricity_ftM_sl720_pl336_cycle168_mlp_seed1024  
+mse:0.16273973882198334, mae:0.26121705770492554
+
+Electricity_720_720_CycleNet_electricity_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.20186930894851685, mae:0.2981753945350647
+
+Electricity_96_96_CycleNetQM_electricity_ftM_sl96_pl96_cycle168_mlp_seed1024  
+mse:0.1377354860305786, mae:0.2312936633825302
+
+Electricity_96_192_CycleNetQM_electricity_ftM_sl96_pl192_cycle168_mlp_seed1024  
+mse:0.1537850946187973, mae:0.24622344970703125
+
+Electricity_96_336_CycleNetQM_electricity_ftM_sl96_pl336_cycle168_mlp_seed1024  
+mse:0.17094695568084717, mae:0.2638360559940338
+
+Electricity_96_720_CycleNetQM_electricity_ftM_sl96_pl720_cycle168_mlp_seed1024  
+mse:0.2082071751356125, mae:0.2959462106227875
+
+Electricity_192_96_CycleNetQM_electricity_ftM_sl192_pl96_cycle168_mlp_seed1024  
+mse:0.12999580800533295, mae:0.22385439276695251
+
+Electricity_192_192_CycleNetQM_electricity_ftM_sl192_pl192_cycle168_mlp_seed1024  
+mse:0.14697398245334625, mae:0.23995116353034973
+
+Electricity_192_336_CycleNetQM_electricity_ftM_sl192_pl336_cycle168_mlp_seed1024  
+mse:0.16444365680217743, mae:0.25786611437797546
+
+Electricity_192_720_CycleNetQM_electricity_ftM_sl192_pl720_cycle168_mlp_seed1024  
+mse:0.20319823920726776, mae:0.292237251996994
+
+Electricity_336_96_CycleNetQM_electricity_ftM_sl336_pl96_cycle168_mlp_seed1024  
+mse:0.1289767324924469, mae:0.22316285967826843
+
+Electricity_336_192_CycleNetQM_electricity_ftM_sl336_pl192_cycle168_mlp_seed1024  
+mse:0.14730767905712128, mae:0.2425501048564911
+
+Electricity_336_336_CycleNetQM_electricity_ftM_sl336_pl336_cycle168_mlp_seed1024  
+mse:0.16219373047351837, mae:0.2571551203727722
+
+Electricity_336_720_CycleNetQM_electricity_ftM_sl336_pl720_cycle168_mlp_seed1024  
+mse:0.20138627290725708, mae:0.2910800278186798
+
+Electricity_720_96_CycleNetQM_electricity_ftM_sl720_pl96_cycle168_mlp_seed1024  
+mse:0.12988503277301788, mae:0.22530655562877655
+
+Electricity_720_192_CycleNetQM_electricity_ftM_sl720_pl192_cycle168_mlp_seed1024  
+mse:0.14643613994121552, mae:0.2409244179725647
+
+Electricity_720_336_CycleNetQM_electricity_ftM_sl720_pl336_cycle168_mlp_seed1024  
+mse:0.16257260739803314, mae:0.2582683861255646
+
+Electricity_720_720_CycleNetQM_electricity_ftM_sl720_pl720_cycle168_mlp_seed1024  
+mse:0.19872641563415527, mae:0.2921578884124756
+
+Electricity_96_96_LSTM_electricity_ftM_sl96_pl96_cycle168_rnn_seed1024  
+mse:0.35924842953681946, mae:0.41971567273139954
+
+Electricity_96_192_LSTM_electricity_ftM_sl96_pl192_cycle168_rnn_seed1024  
+mse:0.5517017245292664, mae:0.5539455413818359
+
+Electricity_96_336_LSTM_electricity_ftM_sl96_pl336_cycle168_rnn_seed1024  
+mse:0.6053838729858398, mae:0.5880115032196045
+
+Electricity_96_720_LSTM_electricity_ftM_sl96_pl720_cycle168_rnn_seed1024  
+mse:0.7747125625610352, mae:0.6893671751022339
+
+Electricity_192_96_LSTM_electricity_ftM_sl192_pl96_cycle168_rnn_seed1024  
+mse:0.3303739130496979, mae:0.4007846713066101
+
+Electricity_192_192_LSTM_electricity_ftM_sl192_pl192_cycle168_rnn_seed1024  
+mse:0.3386967182159424, mae:0.4084591567516327
+
+Electricity_192_336_LSTM_electricity_ftM_sl192_pl336_cycle168_rnn_seed1024  
+mse:0.5943055152893066, mae:0.5826271772384644
+
+Electricity_192_720_LSTM_electricity_ftM_sl192_pl720_cycle168_rnn_seed1024  
+mse:0.9263173937797546, mae:0.7880778312683105
+
+Electricity_336_96_LSTM_electricity_ftM_sl336_pl96_cycle168_rnn_seed1024  
+mse:0.32274290919303894, mae:0.39172372221946716
+
+Electricity_336_192_LSTM_electricity_ftM_sl336_pl192_cycle168_rnn_seed1024  
+mse:0.5374444723129272, mae:0.5424753427505493
+
+Electricity_336_336_LSTM_electricity_ftM_sl336_pl336_cycle168_rnn_seed1024  
+mse:0.6003356575965881, mae:0.5908440947532654
+
+Electricity_336_720_LSTM_electricity_ftM_sl336_pl720_cycle168_rnn_seed1024  
+mse:0.9337888360023499, mae:0.785558819770813
+
+Electricity_720_96_LSTM_electricity_ftM_sl720_pl96_cycle168_rnn_seed1024  
+mse:0.36034032702445984, mae:0.42291590571403503
+
+Electricity_720_192_LSTM_electricity_ftM_sl720_pl192_cycle168_rnn_seed1024  
+mse:0.5597712993621826, mae:0.556989312171936
+
+Electricity_720_336_LSTM_electricity_ftM_sl720_pl336_cycle168_rnn_seed1024  
+mse:0.5988857746124268, mae:0.5882739424705505
+
+Electricity_720_720_LSTM_electricity_ftM_sl720_pl720_cycle168_rnn_seed1024  
+mse:0.3841843903064728, mae:0.4448862075805664
+
+Electricity_96_96_GRU_electricity_ftM_sl96_pl96_cycle168_rnn_seed1024  
+mse:0.29109102487564087, mae:0.37108659744262695
+
+Electricity_96_192_GRU_electricity_ftM_sl96_pl192_cycle168_rnn_seed1024  
+mse:0.5717505812644958, mae:0.5681779384613037
+
+Electricity_96_336_GRU_electricity_ftM_sl96_pl336_cycle168_rnn_seed1024  
+mse:0.6375741958618164, mae:0.6111517548561096
+
+Electricity_96_720_GRU_electricity_ftM_sl96_pl720_cycle168_rnn_seed1024  
+mse:0.7645606398582458, mae:0.6870997548103333
+
+Electricity_192_96_GRU_electricity_ftM_sl192_pl96_cycle168_rnn_seed1024  
+mse:0.31404295563697815, mae:0.38978642225265503
+
+Electricity_192_192_GRU_electricity_ftM_sl192_pl192_cycle168_rnn_seed1024  
+mse:0.5555620789527893, mae:0.5574401617050171
+
+Electricity_192_336_GRU_electricity_ftM_sl192_pl336_cycle168_rnn_seed1024  
+mse:0.6375185251235962, mae:0.6105983257293701
+
+Electricity_192_720_GRU_electricity_ftM_sl192_pl720_cycle168_rnn_seed1024  
+mse:0.7288584113121033, mae:0.6679580807685852
+
+Electricity_336_96_GRU_electricity_ftM_sl336_pl96_cycle168_rnn_seed1024  
+mse:0.3108726143836975, mae:0.38183730840682983
+
+Electricity_336_192_GRU_electricity_ftM_sl336_pl192_cycle168_rnn_seed1024  
+mse:0.5627055764198303, mae:0.5620478391647339
+
+Electricity_336_336_GRU_electricity_ftM_sl336_pl336_cycle168_rnn_seed1024  
+mse:0.6336014866828918, mae:0.6088643074035645
+
+Electricity_336_720_GRU_electricity_ftM_sl336_pl720_cycle168_rnn_seed1024  
+mse:0.7282248139381409, mae:0.6671845316886902
+
+Electricity_720_96_GRU_electricity_ftM_sl720_pl96_cycle168_rnn_seed1024  
+mse:0.307334303855896, mae:0.38631337881088257
+
+Electricity_720_192_GRU_electricity_ftM_sl720_pl192_cycle168_rnn_seed1024  
+mse:0.5547283887863159, mae:0.5567222237586975
+
+Electricity_720_336_GRU_electricity_ftM_sl720_pl336_cycle168_rnn_seed1024  
+mse:0.6216358542442322, mae:0.6013460159301758
+
+Electricity_720_720_GRU_electricity_ftM_sl720_pl720_cycle168_rnn_seed1024  
+mse:0.7404915690422058, mae:0.6747996211051941
+
+Electricity_96_96_CycleNet_electricity_ftM_sl96_pl96_cycle168_linear_seed1024  
+mse:0.15515311062335968, mae:0.25214603543281555
+
+Electricity_96_192_CycleNet_electricity_ftM_sl96_pl192_cycle168_linear_seed1024  
+mse:0.16822652518749237, mae:0.2629972994327545
+
+Electricity_96_336_CycleNet_electricity_ftM_sl96_pl336_cycle168_linear_seed1024  
+mse:0.185129314661026, mae:0.27944037318229675
+
+Electricity_96_720_CycleNet_electricity_ftM_sl96_pl720_cycle168_linear_seed1024  
+mse:0.22425751388072968, mae:0.31065818667411804
+
+Electricity_192_96_CycleNet_electricity_ftM_sl192_pl96_cycle168_linear_seed1024  
+mse:0.14569240808486938, mae:0.24349944293498993
+
+Electricity_192_192_CycleNet_electricity_ftM_sl192_pl192_cycle168_linear_seed1024  
+mse:0.15940824151039124, mae:0.2554539144039154
+
+Electricity_192_336_CycleNet_electricity_ftM_sl192_pl336_cycle168_linear_seed1024  
+mse:0.1762891411781311, mae:0.2720714211463928
+
+Electricity_192_720_CycleNet_electricity_ftM_sl192_pl720_cycle168_linear_seed1024  
+mse:0.21499818563461304, mae:0.303465336561203
+
+Electricity_336_96_CycleNet_electricity_ftM_sl336_pl96_cycle168_linear_seed1024  
+mse:0.13842234015464783, mae:0.23671704530715942
+
+Electricity_336_192_CycleNet_electricity_ftM_sl336_pl192_cycle168_linear_seed1024  
+mse:0.153073251247406, mae:0.24948722124099731
+
+Electricity_336_336_CycleNet_electricity_ftM_sl336_pl336_cycle168_linear_seed1024  
+mse:0.169661745429039, mae:0.2659042477607727
+
+Electricity_336_720_CycleNet_electricity_ftM_sl336_pl720_cycle168_linear_seed1024  
+mse:0.20807568728923798, mae:0.2977242171764374
+
+Electricity_720_96_CycleNet_electricity_ftM_sl720_pl96_cycle168_linear_seed1024  
+mse:0.1343320906162262, mae:0.23178339004516602
+
+Electricity_720_192_CycleNet_electricity_ftM_sl720_pl192_cycle168_linear_seed1024  
+mse:0.14937902987003326, mae:0.2452538162469864
+
+Electricity_720_336_CycleNet_electricity_ftM_sl720_pl336_cycle168_linear_seed1024  
+mse:0.16554298996925354, mae:0.261480450630188
+
+Electricity_720_720_CycleNet_electricity_ftM_sl720_pl720_cycle168_linear_seed1024  
+mse:0.20471781492233276, mae:0.29427671432495117
+

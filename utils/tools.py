@@ -44,7 +44,7 @@ class EarlyStopping:
         self.counter = 0
         self.best_score = None
         self.early_stop = False
-        self.val_loss_min = np.Inf
+        self.val_loss_min = np.inf
         self.delta = delta
 
     def __call__(self, val_loss, model, path):
@@ -93,11 +93,12 @@ def visual(true, preds=None, name='./pic/test.pdf'):
     Results visualization
     """
     plt.figure()
-    plt.plot(true, label='GroundTruth', linewidth=2)
+    plt.plot(true, label='GroundTruth', linewidth=1)
     if preds is not None:
-        plt.plot(preds, label='Prediction', linewidth=2)
+        plt.plot(preds, label='Prediction', linewidth=0.5)
     plt.legend()
     plt.savefig(name, bbox_inches='tight')
+    plt.close()
 
 def test_params_flop(model,x_shape):
     """
